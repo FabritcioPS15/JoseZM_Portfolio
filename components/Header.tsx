@@ -75,7 +75,7 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-            <Image src="/images/LogoJLZ.png" alt="Logo" width={150} height={40} className="h-10 w-auto transition-transform duration-300 group-hover:scale-105" style={{ width: 'auto' }} priority />
+            <Image src="/images/LogoJLZ.png" alt="Logo" width={150} height={40} className="h-10 w-auto transition-transform duration-300 group-hover:scale-105" priority />
             <div className="h-6 sm:h-8 w-px bg-brand-gold opacity-70"></div>
             <div className="transition-all duration-300">
               <p className="sm:hidden text-brand-navy font-serif font-bold text-xl tracking-wider leading-tight group-hover:text-brand-gold transition-colors duration-300 whitespace-nowrap">

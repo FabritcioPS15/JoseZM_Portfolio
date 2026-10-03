@@ -50,6 +50,22 @@ create policy "uploads public read"
   on storage.objects for select
   using (bucket_id = 'uploads');
 
+drop policy if exists "uploads public insert" on storage.objects;
+create policy "uploads public insert"
+  on storage.objects for insert
+  with check (bucket_id = 'uploads');
+
+drop policy if exists "uploads public update" on storage.objects;
+create policy "uploads public update"
+  on storage.objects for update
+  using (bucket_id = 'uploads')
+  with check (bucket_id = 'uploads');
+
+drop policy if exists "uploads public delete" on storage.objects;
+create policy "uploads public delete"
+  on storage.objects for delete
+  using (bucket_id = 'uploads');
+
 -- ============================================================
 -- Datos iniciales
 -- NOTA: se eliminan las secciones existentes para dejar las 3 de ejemplo.

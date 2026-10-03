@@ -32,29 +32,47 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'La imagen supera el máximo de 5 MB' }, { status: 400 })
   }
 
-  // Asegurar que el bucket exista (público)
-  const { data: buckets } = await supabaseAdmin.storage.listBuckets()
-  if (!buckets?.some((b) => b.name === BUCKET)) {
-    const { error: createError } = await supabaseAdmin.storage.createBucket(BUCKET, {
-      public: true,
-    })
-    if (createError) {
-      return NextResponse.json({ error: createError.message }, { status: 500 })
+  try {
+    const bytes = Buffer.from(await file.arrayBuffer())
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '')
+    const path = `articles/${crypto.randomUUID()}.${ext || 'jpg'}`
+
+    // Intentar subir directamente al bucket
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .upload(path, bytes, { contentType: file.type, upsert: true })
+
+    if (uploadError) {
+      console.error('[Upload Error]', uploadError)
+
+      // Si el bucket no fue encontrado, intentamos crearlo y reintentar
+      if (uploadError.message?.toLowerCase().includes('bucket not found') || (uploadError as { statusCode?: string })?.statusCode === '404') {
+        const { error: createError } = await supabaseAdmin.storage.createBucket(BUCKET, {
+          public: true,
+        })
+        if (createError && !createError.message?.toLowerCase().includes('already exists')) {
+          console.error('[Create Bucket Error]', createError)
+          return NextResponse.json({ error: createError.message }, { status: 500 })
+        }
+
+        const { error: retryError } = await supabaseAdmin.storage
+          .from(BUCKET)
+          .upload(path, bytes, { contentType: file.type, upsert: true })
+
+        if (retryError) {
+          console.error('[Retry Upload Error]', retryError)
+          return NextResponse.json({ error: retryError.message }, { status: 500 })
+        }
+      } else {
+        return NextResponse.json({ error: uploadError.message }, { status: 500 })
+      }
     }
+
+    const { data: pub } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(path)
+    return NextResponse.json({ url: pub.publicUrl })
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Error interno al subir imagen'
+    console.error('[Upload Fatal Error]', err)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
-
-  const bytes = Buffer.from(await file.arrayBuffer())
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '')
-  const path = `articles/${crypto.randomUUID()}.${ext || 'jpg'}`
-
-  const { error: uploadError } = await supabaseAdmin.storage
-    .from(BUCKET)
-    .upload(path, bytes, { contentType: file.type, upsert: true })
-
-  if (uploadError) {
-    return NextResponse.json({ error: uploadError.message }, { status: 500 })
-  }
-
-  const { data: pub } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(path)
-  return NextResponse.json({ url: pub.publicUrl })
 }

@@ -21,7 +21,7 @@ export default function Footer() {
 
           {/* Left: Logo and Copyright */}
           <div className="flex flex-col items-center md:items-start gap-4">
-            <Image src="/images/JLZlogo.png" alt="José Luis Zelada" width={120} height={32} className="h-8 w-auto" style={{ width: 'auto' }} />
+            <Image src="/images/JLZlogo.png" alt="José Luis Zelada" width={120} height={32} className="h-8 w-auto" />
             <div className="text-[11px] text-gray-400 leading-tight text-center md:text-left">
               <p>© {new Date().getFullYear()} José Luis Zelada</p>
               <p>Todos los derechos reservados.</p>

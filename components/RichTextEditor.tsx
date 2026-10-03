@@ -3,8 +3,6 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
-import Underline from '@tiptap/extension-underline'
 import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
 import TaskList from '@tiptap/extension-task-list'
@@ -40,18 +38,18 @@ export default function RichTextEditor({
   onChange: (value: string) => void
 }) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         codeBlock: { HTMLAttributes: { class: 'my-3' } },
-      }),
-      Underline,
-      Image,
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-brand-gold underline underline-offset-2',
+        link: {
+          openOnClick: false,
+          HTMLAttributes: {
+            class: 'text-brand-gold underline underline-offset-2',
+          },
         },
       }),
+      Image,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Highlight.configure({ multicolor: true }),
       TaskList,

@@ -16,6 +16,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://joseluiszelada.pe'),
   title: 'José Luis Zelada | Consultor en Gestión del Talento Humano',
   description: 'Consultor especializado en gestión del talento humano, desarrollo organizacional y consultoría estratégica. Acompaño a personas y organizaciones hacia el éxito.',
   keywords: ['Gestión del Talento Humano', 'Liderazgo', 'Recursos Humanos', 'Consultoría', 'José Luis Zelada', 'Desarrollo Organizacional'],
