@@ -2,24 +2,16 @@ import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { isAuthenticated } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
-import { supabaseHasVisibleColumn } from '@/lib/dbSchema'
+import { sectionToRow, friendlyError } from '@/lib/sectionsAdmin'
 import { normalizeSection, newId, type Section } from '@/lib/sections'
 
-async function toRow(section: Section) {
-  const includeVisible = await supabaseHasVisibleColumn()
-  return {
-    id: section.id,
-    title: section.title,
-    icon: section.icon,
-    type: section.type,
-    link: section.link || '/publicaciones',
-    order: section.order,
-    ...(includeVisible ? { is_visible: section.isVisible } : {}),
-    items: section.items,
+// Solo el panel de administración necesita el listado completo (incluye
+// secciones ocultas y el contenido de los artículos). El sitio público usa
+// lib/sections.ts, así que aquí basta con exigir sesión.
+export async function GET(request: Request) {
+  if (!isAuthenticated(request)) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
-}
-
-export async function GET() {
   if (!supabaseAdmin) {
     return NextResponse.json({ sections: [] })
   }
@@ -30,7 +22,7 @@ export async function GET() {
     .order('order', { ascending: true })
 
   if (error) {
-    return NextResponse.json({ sections: [] })
+    return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
   if (!data || data.length === 0) {
@@ -61,15 +53,19 @@ export async function POST(request: Request) {
   }
 
   const section = normalizeSection(body)
-  if (!section || !section.title) {
+  if (!section || !section.title?.trim()) {
     return NextResponse.json({ error: 'La sección debe tener un título' }, { status: 400 })
   }
   if (!body.id) section.id = newId()
 
-  const { data, error } = await supabaseAdmin.from('sections').insert(await toRow(section)).select().single()
+  const { data, error } = await supabaseAdmin
+    .from('sections')
+    .insert(await sectionToRow(section))
+    .select()
+    .single()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: friendlyError(error.message) }, { status: 500 })
   }
 
   await revalidatePath('/', 'layout')

@@ -2,22 +2,8 @@ import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 import { isAuthenticated } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
-import { supabaseHasVisibleColumn } from '@/lib/dbSchema'
-import { normalizeSection, type Section } from '@/lib/sections'
-
-async function toRow(section: Section) {
-  const includeVisible = await supabaseHasVisibleColumn()
-  return {
-    id: section.id,
-    title: section.title,
-    icon: section.icon,
-    type: section.type,
-    link: section.link || '/publicaciones',
-    order: section.order,
-    ...(includeVisible ? { is_visible: section.isVisible } : {}),
-    items: section.items,
-  }
-}
+import { upsertSection, friendlyError } from '@/lib/sectionsAdmin'
+import { normalizeSection } from '@/lib/sections'
 
 type Params = { params: Promise<{ id: string }> }
 
@@ -40,19 +26,15 @@ export async function PUT(request: Request, { params }: Params) {
   }
 
   const section = normalizeSection(body)
-  if (!section || !section.title) {
+  if (!section || !section.title?.trim()) {
     return NextResponse.json({ error: 'La sección debe tener un título' }, { status: 400 })
   }
   section.id = id
 
-  const { data, error } = await supabaseAdmin
-    .from('sections')
-    .upsert(await toRow(section), { onConflict: 'id' })
-    .select()
-    .single()
+  const { data, error } = await upsertSection(section)
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: friendlyError(error.message) }, { status: 500 })
   }
 
   await revalidatePath('/', 'layout')
@@ -70,10 +52,21 @@ export async function DELETE(request: Request, { params }: Params) {
 
   const { id } = await params
 
-  const { error } = await supabaseAdmin.from('sections').delete().eq('id', id)
+  const { data, error } = await supabaseAdmin
+    .from('sections')
+    .delete()
+    .eq('id', id)
+    .select('id')
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ error: friendlyError(error.message) }, { status: 500 })
+  }
+
+  if (!data || data.length === 0) {
+    return NextResponse.json(
+      { error: 'La sección ya no existe. Recarga la página para ver el estado actual.' },
+      { status: 404 }
+    )
   }
 
   await revalidatePath('/', 'layout')

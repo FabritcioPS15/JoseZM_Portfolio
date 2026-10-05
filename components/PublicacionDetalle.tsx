@@ -255,7 +255,7 @@ function ArticleLayout({
             {item.content ? (
               /<[a-z][\s\S]*>/i.test(item.content) ? (
                 <div
-                  className="prose prose-sm md:prose-base prose-brand max-w-none prose-headings:font-serif prose-p:text-gray-600 prose-a:text-brand-gold prose-a:no-underline hover:prose-a:underline"
+                  className="prose prose-sm md:prose-base prose-brand max-w-none prose-headings:font-serif prose-p:text-gray-600"
                   dangerouslySetInnerHTML={{ __html: item.content }}
                 />
               ) : (
@@ -424,7 +424,7 @@ function BookLayout({
             {item.content ? (
               /<[a-z][\s\S]*>/i.test(item.content) ? (
                 <div
-                  className="prose prose-sm md:prose-base prose-brand max-w-none prose-headings:font-serif prose-p:text-gray-600 prose-a:text-brand-gold prose-a:no-underline hover:prose-a:underline"
+                  className="prose prose-sm md:prose-base prose-brand max-w-none prose-headings:font-serif prose-p:text-gray-600"
                   dangerouslySetInnerHTML={{ __html: item.content }}
                 />
               ) : (

@@ -158,6 +158,153 @@
   }
 }
 
+/* Estilo editorial del cuerpo de los artículos.
+   Se declara sin @layer a propósito: en Tailwind v4 el CSS sin capa gana a las
+   utilidades, así que estos valores pisan los de `prose` sin usar !important. */
+.prose-brand {
+  --tw-prose-body: #4b5563;
+  --tw-prose-headings: #0f2440;
+  --tw-prose-lead: #374151;
+  --tw-prose-links: #0f2440;
+  --tw-prose-bold: #0f2440;
+  --tw-prose-counters: #9ca3af;
+  --tw-prose-bullets: #c9a35c;
+  --tw-prose-hr: #e5e7eb;
+  --tw-prose-quotes: #0f2440;
+  --tw-prose-quote-borders: #c9a35c;
+  --tw-prose-captions: #9ca3af;
+  --tw-prose-code: #0f2440;
+  --tw-prose-th-borders: #d1d5db;
+  --tw-prose-td-borders: #eceff3;
+}
+
+/* Espaciado vertical más airy y una medida de lectura cómoda. */
+.prose-brand :where(p, ul, ol, blockquote, pre, table, figure) {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+/* Los subtítulos cuentan la historia: un pelín más de aire por encima. */
+.prose-brand :where(h2, h3, h4) {
+  letter-spacing: -0.011em;
+  scroll-margin-top: 5rem;
+}
+
+.prose-brand :where(h2) {
+  margin-top: 2em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid #eceff3;
+}
+
+.prose-brand :where(h3) {
+  margin-top: 1.75em;
+}
+
+.prose-brand :where(h2 + p, h3 + p) {
+  margin-top: 0.7em;
+}
+
+/* Enlaces: subrayado fino al pasar el ratón, conservando el color de marca. */
+.prose-brand :where(a):not(:where([class~='not-prose'], *)) {
+  text-decoration-color: rgb(201 163 92 / 0.5);
+  text-underline-offset: 3px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+.prose-brand :where(a):hover {
+  color: #c9a35c;
+  text-decoration-color: #c9a35c;
+}
+
+/* Citas: sangría corta y barra dorada, sin cursiva. */
+.prose-brand :where(blockquote) {
+  border-left-width: 3px;
+  padding-left: 1.25rem;
+  font-weight: 400;
+  font-style: normal;
+  color: #0f2440;
+}
+
+.prose-brand :where(blockquote p:first-of-type)::before,
+.prose-brand :where(blockquote p:last-of-type)::after {
+  content: none;
+}
+
+/* Listas con viñeta dorada fina. */
+.prose-brand :where(ul > li)::marker {
+  color: #c9a35c;
+}
+
+.prose-brand :where(ol > li)::marker {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* Código en línea y bloques de código. */
+.prose-brand :where(code):not(:where([class~='not-prose'], *)) {
+  background-color: #f8f9fb;
+  border: 1px solid #eceff3;
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+.prose-brand :where(pre) {
+  background-color: #0f2440;
+  border: 1px solid #1c3557;
+  border-radius: 12px;
+  padding: 1.15rem 1.25rem;
+  box-shadow: 0 10px 30px -18px rgb(15 36 64 / 0.55);
+}
+
+.prose-brand :where(pre code):not(:where([class~='not-prose'], *)) {
+  background-color: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 0.85em;
+  font-weight: 400;
+  color: #e5e7eb;
+}
+
+/* Imágenes del artículo: esquinas suaves y sombra discreta. */
+.prose-brand :where(img) {
+  border-radius: 12px;
+  box-shadow: 0 12px 32px -20px rgb(15 36 64 / 0.5);
+  margin-top: 1.75em;
+  margin-bottom: 1.75em;
+}
+
+.prose-brand :where(figure figcaption) {
+  text-align: center;
+  font-style: normal;
+  letter-spacing: 0.01em;
+}
+
+.prose-brand :where(hr) {
+  border-top-width: 1px;
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+}
+
+.prose-brand :where(table) {
+  font-size: 0.9em;
+  border-collapse: collapse;
+}
+
+.prose-brand :where(th):not(:where([class~='not-prose'], *)) {
+  background-color: #f8f9fb;
+  font-size: 0.85em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.7em 0.85em;
+}
+
+.prose-brand :where(td):not(:where([class~='not-prose'], *)) {
+  padding: 0.7em 0.85em;
+  vertical-align: top;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -15,8 +15,10 @@ const inter = Inter({
   weight: ['400', '500', '600', '700']
 })
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://joseluiszelada.pe'
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://joseluiszelada.pe'),
+  metadataBase: new URL(SITE_URL),
   title: 'José Luis Zelada | Consultor en Gestión del Talento Humano',
   description: 'Consultor especializado en gestión del talento humano, desarrollo organizacional y consultoría estratégica. Acompaño a personas y organizaciones hacia el éxito.',
   keywords: ['Gestión del Talento Humano', 'Liderazgo', 'Recursos Humanos', 'Consultoría', 'José Luis Zelada', 'Desarrollo Organizacional'],
@@ -25,12 +27,12 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_PE',
-    url: 'https://joseluiszelada.pe',
+    url: SITE_URL,
     title: 'José Luis Zelada | Consultor en Gestión del Talento Humano',
     description: 'Consultor especializado en gestión del talento humano y desarrollo organizacional. Acompaño a personas y organizaciones hacia el éxito.',
     siteName: 'José Luis Zelada',
     images: [{
-      url: '/og-image.jpg', // Recommend user to add this image
+      url: '/og-image.jpg',
       width: 1200,
       height: 630,
       alt: 'José Luis Zelada',

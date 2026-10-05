@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import toast, { Toaster } from 'react-hot-toast'
 import {
@@ -29,7 +29,6 @@ import {
 } from 'lucide-react'
 import {
   defaultSection,
-  itemHref,
   newId,
   type Section,
   type SectionIcon,
@@ -227,6 +226,13 @@ export default function AdminPage() {
     )
     markDirty(sectionId)
     setExpandedItemId(item.id)
+
+    // El editor se abre al final de la lista: sin esto hay que bajar a buscarlo.
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`item-row-${item.id}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    })
   }
 
   const moveItem = (sectionId: string, itemId: string, dir: -1 | 1) => {
@@ -267,13 +273,38 @@ export default function AdminPage() {
   }
 
   const removeItem = (sectionId: string, itemId: string) => {
-    setSections((prev) =>
-      prev.map((s) =>
-        s.id === sectionId ? { ...s, items: s.items.filter((it) => it.id !== itemId) } : s
-      )
-    )
+    const section = sections.find((s) => s.id === sectionId)
+    const item = section?.items.find((it) => it.id === itemId)
+    if (!section || !item) return
+
+    const label = item.title?.trim() || 'Publicación sin título'
+    if (!window.confirm(`¿Eliminar "${label}"?\n\nSe borrará del sitio de forma permanente.`))
+      return
+
+    const index = section.items.findIndex((it) => it.id === itemId)
+    const nextSection: Section = {
+      ...section,
+      items: section.items.filter((it) => it.id !== itemId),
+    }
+
     if (expandedItemId === itemId) setExpandedItemId(null)
-    markDirty(sectionId)
+
+    // El ítem vive dentro del JSONB de la sección, así que se guarda la sección
+    // entera: antes el borrado solo era local y se perdía al recargar.
+    setSections((prev) => prev.map((s) => (s.id === sectionId ? nextSection : s)))
+    void persist(sectionId, nextSection, 'Publicación eliminada').then((ok) => {
+      // Si no se pudo guardar, se devuelve el ítem a su posición original.
+      if (ok) return
+      setSections((prev) =>
+        prev.map((s) => {
+          if (s.id !== sectionId) return s
+          const items = [...s.items]
+          const at = Math.min(index, items.length)
+          items.splice(at, 0, item)
+          return { ...s, items }
+        })
+      )
+    })
   }
 
   const addSection = () => {
@@ -285,6 +316,8 @@ export default function AdminPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  // Reordena la sección y renumera `order` de 1..n. El sitio público ordena por
+  // esa columna, así que sin reasignarla las flechas no tenían efecto.
   const moveSection = (id: string, dir: -1 | 1) => {
     setSections((prev) => {
       const idx = prev.findIndex((s) => s.id === id)
@@ -293,36 +326,53 @@ export default function AdminPage() {
       const next = [...prev]
       const [item] = next.splice(idx, 1)
       next.splice(target, 0, item)
-      return next
+      return next.map((s, i) => ({ ...s, order: i + 1 }))
     })
-    markDirty(id)
+    // El renumerado afecta a todas las secciones, así que todas quedan pendientes.
+    setDirtyIds(new Set(sections.map((s) => s.id)))
   }
 
-  const saveSection = async (section: Section) => {
-    setBusy(true)
+  // Guarda una sección concreta y sincroniza el estado local con lo que devuelve
+  // el servidor. Devuelve false si falló, para que quien llama pueda revertir.
+  const persist = async (
+    sectionId: string,
+    section: Section,
+    successMessage: string
+  ): Promise<boolean> => {
     try {
-      const res = await fetch(`/api/sections/${section.id}`, {
+      const res = await fetch(`/api/sections/${sectionId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(section),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        notify('error', data.error || 'No se pudo guardar la sección')
-        return
+        notify('error', data.error || 'No se pudo guardar')
+        return false
       }
       if (data.section) {
-        setSections((prev) => prev.map((s) => (s.id === section.id ? data.section : s)))
+        setSections((prev) =>
+          prev.map((s) => (s.id === sectionId ? (data.section as Section) : s))
+        )
       }
       setDirtyIds((prev) => {
         const next = new Set(prev)
-        next.delete(section.id)
+        next.delete(sectionId)
         return next
       })
-      setExpandedItemId(null)
-      notify('ok', 'Sección guardada correctamente')
+      notify('ok', successMessage)
+      return true
     } catch {
       notify('error', 'Error de conexión al guardar')
+      return false
+    }
+  }
+
+  const saveSection = async (section: Section) => {
+    setBusy(true)
+    try {
+      const ok = await persist(section.id, section, 'Sección guardada correctamente')
+      if (ok) setExpandedItemId(null)
     } finally {
       setBusy(false)
     }
@@ -335,6 +385,9 @@ export default function AdminPage() {
     setBusy(true)
     let okCount = 0
     const errors: string[] = []
+    const savedIds: string[] = []
+    const serverSections: Section[] = []
+
     for (const section of dirty) {
       try {
         const res = await fetch(`/api/sections/${section.id}`, {
@@ -342,51 +395,112 @@ export default function AdminPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(section),
         })
+        const data = await res.json().catch(() => ({}))
         if (res.ok) {
           okCount++
+          savedIds.push(section.id)
+          if (data.section) serverSections.push(data.section as Section)
         } else {
-          const data = await res.json().catch(() => ({}))
           errors.push(data.error || 'Error al guardar')
         }
       } catch {
         errors.push('Error de conexión')
       }
     }
+
+    // Solo se limpian las secciones que sí se guardaron. Antes se borraban todas
+    // los flags, incluidas las fallidas, y esos cambios ya no se podían reintentar.
     setDirtyIds((prev) => {
       const next = new Set(prev)
-      dirty.forEach((s) => next.delete(s.id))
+      savedIds.forEach((id) => next.delete(id))
       return next
     })
+    if (serverSections.length > 0) {
+      setSections((prev) =>
+        prev.map((s) => serverSections.find((saved) => saved.id === s.id) ?? s)
+      )
+    }
     setBusy(false)
+
     if (errors.length === 0) {
       notify('ok', `Guardado: ${okCount} ${okCount === 1 ? 'sección' : 'secciones'}`)
     } else {
-      notify('error', `${okCount} guardadas, ${errors.length} con error. Revisa y vuelve a guardar.`)
+      notify(
+        'error',
+        `${okCount} guardadas, ${errors.length} con error: ${errors[0]}`
+      )
     }
   }
 
-  // Atajo de teclado: Ctrl/Cmd+S guarda los cambios pendientes.
+  // Atajo de teclado: Ctrl/Cmd+S guarda los cambios pendientes. Se registra una
+  // sola vez y lee el estado actual a través de un ref, en vez de añadir y
+  // quitar el listener en cada render.
+  const latestRef = useRef({
+    status,
+    busy,
+    dirtyCount: dirtyIds.size,
+    selectedSection: null as Section | null,
+    saveAllSections,
+    saveSection,
+  })
+
+  useEffect(() => {
+    latestRef.current = {
+      status,
+      busy,
+      dirtyCount: dirtyIds.size,
+      selectedSection,
+      saveAllSections,
+      saveSection,
+    }
+  })
+
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-        e.preventDefault()
-        if (status !== 'ready' || busy) return
-        if (dirtyIds.size > 0) void saveAllSections()
-        else if (selectedSection) void saveSection(selectedSection)
-      }
+      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 's') return
+      e.preventDefault()
+      const { status, busy, dirtyCount, selectedSection, saveAllSections, saveSection } =
+        latestRef.current
+      if (status !== 'ready' || busy) return
+      if (dirtyCount > 0) void saveAllSections()
+      else if (selectedSection) void saveSection(selectedSection)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  })
+  }, [])
+
+  // Avisa antes de cerrar o recargar la página con cambios sin guardar.
+  useEffect(() => {
+    if (dirtyIds.size === 0) return
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  }, [dirtyIds.size])
 
   const deleteSection = async (section: Section) => {
-    if (!window.confirm(`¿Eliminar la sección "${section.title}"? Esta acción no se puede deshacer.`))
+    const pending = section.items.length
+    const warning = pending
+      ? `\n\nSe eliminarán también sus ${pending} publicación(es).`
+      : ''
+    const extra =
+      dirtyIds.size > 1
+        ? `\n\nAviso: tienes ${dirtyIds.size - 1} categoría(s) más con cambios sin guardar.`
+        : ''
+    if (
+      !window.confirm(
+        `¿Eliminar la categoría "${section.title}"?${warning}${extra}\n\nEsta acción no se puede deshacer.`
+      )
+    )
       return
     setBusy(true)
     try {
       const res = await fetch(`/api/sections/${section.id}`, { method: 'DELETE' })
+      const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        notify('error', 'No se pudo eliminar la sección')
+        notify('error', data.error || 'No se pudo eliminar la sección')
         return
       }
       setSections((prev) => prev.filter((s) => s.id !== section.id))
@@ -932,6 +1046,7 @@ export default function AdminPage() {
                           return (
                             <SortableItem key={item.id} id={item.id}>
                               <div
+                                id={`item-row-${item.id}`}
                                 className={`flex-1 border rounded-xl overflow-hidden transition-all duration-200 ${
                                   isExpanded
                                     ? 'border-brand-gold/50 shadow-sm'
@@ -1035,16 +1150,32 @@ export default function AdminPage() {
 
                                 {/* Editor completo: solo si está seleccionado */}
                                 {isExpanded && (
-                                  <div className="border-t border-gray-100 bg-white">
-                                    <ItemEditor
+                                  <ItemEditor
                                       item={item}
                                       index={itemIndex}
                                       sectionType={selectedSection.type}
                                       onChange={(patch) => patchItem(selectedSection.id, item.id, patch)}
                                       onRemove={() => removeItem(selectedSection.id, item.id)}
-                                      autoFocus={!item.title && !item.description && !item.category && !item.author}
+                                      onUploaded={(url) => {
+                                        // Se aplica y se persiste en el mismo paso
+                                        // para que la imagen no dependa de pulsar
+                                        // "Guardar" y luego perderla.
+                                        const items = selectedSection.items.map((it) =>
+                                          it.id === item.id ? { ...it, image: url } : it
+                                        )
+                                        const next = { ...selectedSection, items }
+                                        setSections((prev) =>
+                                          prev.map((s) => (s.id === next.id ? next : s))
+                                        )
+                                        void persist(next.id, next, 'Imagen guardada')
+                                      }}
+                                      autoFocus={
+                                        !item.title &&
+                                        !item.description &&
+                                        !item.category &&
+                                        !item.author
+                                      }
                                     />
-                                  </div>
                                 )}
                               </div>
                             </SortableItem>
@@ -1074,11 +1205,9 @@ export default function AdminPage() {
                             selectedSection.items.find((it) => it.id === expandedItemId) ??
                             selectedSection.items[0]
                           return previewItem ? (
-                            <PublicacionCard
-                              item={previewItem}
-                              section={selectedSection}
-                              href={itemHref(previewItem, selectedSection)}
-                            />
+                            // Sin `href`: como enlace, al hacer clic se salía del
+                            // admin y se perdían los cambios sin guardar.
+                            <PublicacionCard item={previewItem} section={selectedSection} />
                           ) : (
                             <div className="text-xs text-gray-400 bg-gray-50 rounded-lg px-4 py-8 border border-dashed border-gray-200 text-center">
                               Añade una publicación para ver la preview.
