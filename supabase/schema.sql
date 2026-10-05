@@ -50,21 +50,16 @@ create policy "uploads public read"
   on storage.objects for select
   using (bucket_id = 'uploads');
 
+-- Solo lectura pública. Las escrituras pasan por /api/upload, que usa la service
+-- role y por tanto ignora RLS: no hacen falta políticas de insert/update/delete.
+-- Con la publishable key (que viaja incrustada en el bundle del navegador)
+-- abrirlas permitiría subir, sobrescribir o borrar archivos sin contraseña.
 drop policy if exists "uploads public insert" on storage.objects;
-create policy "uploads public insert"
-  on storage.objects for insert
-  with check (bucket_id = 'uploads');
-
 drop policy if exists "uploads public update" on storage.objects;
-create policy "uploads public update"
-  on storage.objects for update
-  using (bucket_id = 'uploads')
-  with check (bucket_id = 'uploads');
-
 drop policy if exists "uploads public delete" on storage.objects;
-create policy "uploads public delete"
-  on storage.objects for delete
-  using (bucket_id = 'uploads');
+drop policy if exists "uploads authenticated insert" on storage.objects;
+drop policy if exists "uploads authenticated update" on storage.objects;
+drop policy if exists "uploads authenticated delete" on storage.objects;
 
 -- ============================================================
 -- Datos iniciales
