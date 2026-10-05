@@ -14,7 +14,7 @@ async function toRow(section: Section) {
     type: section.type,
     link: section.link || '/publicaciones',
     order: section.order,
-    ...(includeVisible ? { isVisible: section.isVisible } : {}),
+    ...(includeVisible ? { is_visible: section.isVisible } : {}),
     items: section.items,
   }
 }

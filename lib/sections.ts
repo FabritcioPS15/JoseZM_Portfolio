@@ -145,7 +145,7 @@ export function normalizeSection(row: Record<string, unknown> | null | undefined
     type,
     link: typeof row.link === 'string' && row.link ? row.link : '/publicaciones',
     order: typeof row.order === 'number' ? row.order : 0,
-    isVisible: typeof row.isVisible === 'boolean' ? row.isVisible : true,
+    isVisible: rowIsVisible,
     items,
   }
 }
