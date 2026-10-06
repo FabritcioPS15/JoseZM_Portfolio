@@ -202,7 +202,7 @@ export default function PublicacionesList({ sections }: { sections: Section[] })
                       <span className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-brand-gold to-transparent"></span>
                       <div className="col-span-4 sm:col-span-3 flex justify-center">
                         <div className="transform -rotate-3 hover:rotate-0 transition-transform duration-300">
-                          <BookCover title={item.title} author={item.meta} size="sm" />
+                          <BookCover title={item.title} author={item.meta} image={item.image} size="sm" />
                         </div>
                       </div>
                       <div className="col-span-8 sm:col-span-9 space-y-3">

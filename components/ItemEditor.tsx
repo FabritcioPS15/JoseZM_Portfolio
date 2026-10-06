@@ -1,6 +1,9 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
 import {
   Trash2,
   ImagePlus,
@@ -13,11 +16,15 @@ import {
   Check,
   ChevronDown,
   Link2,
+  CalendarDays,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { SectionItem, SectionType } from '@/lib/sections'
 import { parseTags } from '@/lib/sections'
 import RichTextEditor from './RichTextEditor'
+
+type ValuePiece = Date | null
+type Value = ValuePiece | [ValuePiece, ValuePiece]
 
 const CATEGORIES = ['Investigaciones', 'Artículos', 'Libros']
 
@@ -128,6 +135,35 @@ export default function ItemEditor({
   const [showMeta, setShowMeta] = useState(
     !!item.author || !!item.date || !!item.link || !!item.featured
   )
+  const [showCalendar, setShowCalendar] = useState(false)
+  const dateButtonRef = useRef<HTMLButtonElement>(null)
+  const calendarRef = useRef<HTMLDivElement>(null)
+  const [calendarPos, setCalendarPos] = useState<{ top: number; left: number } | null>(null)
+
+  useEffect(() => {
+    if (!showCalendar) return
+
+    const close = () => setShowCalendar(false)
+    const onMouseDown = (e: MouseEvent) => {
+      const target = e.target as Node
+      if (calendarRef.current?.contains(target) || dateButtonRef.current?.contains(target)) return
+      close()
+    }
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close()
+    }
+
+    document.addEventListener('mousedown', onMouseDown)
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('scroll', close, true)
+    window.addEventListener('resize', close)
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('scroll', close, true)
+      window.removeEventListener('resize', close)
+    }
+  }, [showCalendar])
   // Último valor de `meta` generado solo, para no pisar lo que escribió el autor.
   const autoMetaRef = useRef(item.meta || '')
 
@@ -146,13 +182,57 @@ export default function ItemEditor({
       return
     }
     const iso = new Date(value).toISOString()
-    const label = String(new Date(value).getFullYear())
+    const label = value.slice(0, 4)
     const patch: Partial<SectionItem> = { date: iso }
     if (!item.meta || item.meta === autoMetaRef.current) {
       patch.meta = label
       autoMetaRef.current = label
     }
     onChange(patch)
+  }
+
+  const formattedDate = item.date
+    ? new Date(item.date).toLocaleDateString('es-PE', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      })
+    : ''
+
+  const handleCalendarChange = (value: Value) => {
+    const date = Array.isArray(value) ? value[0] : value
+    if (date) {
+      const y = date.getFullYear()
+      const m = String(date.getMonth() + 1).padStart(2, '0')
+      const d = String(date.getDate()).padStart(2, '0')
+      handleDate(`${y}-${m}-${d}`)
+    } else {
+      handleDate('')
+    }
+    setShowCalendar(false)
+  }
+
+  const toggleCalendar = () => {
+    if (showCalendar) {
+      setShowCalendar(false)
+      return
+    }
+    const rect = dateButtonRef.current?.getBoundingClientRect()
+    const popupWidth = 310
+    const popupHeight = 340
+    let top = 96
+    let left = 12
+    if (rect) {
+      left = Math.min(Math.max(12, rect.left), window.innerWidth - popupWidth - 12)
+      const belowTop = rect.bottom + 8
+      top =
+        belowTop + popupHeight > window.innerHeight
+          ? Math.max(12, rect.top - popupHeight - 8)
+          : belowTop
+    }
+    setCalendarPos({ top, left })
+    setShowCalendar(true)
   }
 
   const upload = async (file: File) => {
@@ -299,12 +379,56 @@ export default function ItemEditor({
                     : 'La tarjeta muestra el año automáticamente.'
                 }
               >
-                <input
-                  type="date"
-                  value={(item.date || '').slice(0, 10)}
-                  onChange={(e) => handleDate(e.target.value)}
-                  className={inputClass}
-                />
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      ref={dateButtonRef}
+                      onClick={toggleCalendar}
+                      aria-expanded={showCalendar}
+                      aria-label="Elegir fecha"
+                      className={`${inputClass} flex items-center justify-between gap-2 text-left`}
+                    >
+                      <span className={item.date ? '' : 'text-gray-400'}>
+                        {formattedDate || 'Seleccionar fecha'}
+                      </span>
+                      <CalendarDays
+                        size={14}
+                        className={`text-brand-gold flex-shrink-0 transition-transform duration-200 ${showCalendar ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+                    {item.date && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleDate('')
+                          setShowCalendar(false)
+                        }}
+                        aria-label="Quitar fecha"
+                        className="px-2.5 rounded-md border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors flex-shrink-0"
+                      >
+                        <X size={14} />
+                      </button>
+                    )}
+                  </div>
+
+                  {showCalendar &&
+                    calendarPos &&
+                    createPortal(
+                      <div
+                        ref={calendarRef}
+                        style={{ top: calendarPos.top, left: calendarPos.left }}
+                        className="fixed z-[60] w-[310px] rounded-lg border border-gray-200 bg-white p-2 shadow-2xl"
+                      >
+                        <Calendar
+                          onChange={handleCalendarChange}
+                          value={item.date ? new Date(`${item.date.slice(0, 10)}T00:00:00`) : null}
+                          locale="es"
+                        />
+                      </div>,
+                      document.body
+                    )}
+                </div>
               </Field>
             </div>
 

@@ -53,19 +53,15 @@ export function parseTags(value: string): string[] {
     .filter(Boolean)
 }
 
-// Prioridad de destino de un ítem:
-// 1) Página propia si tiene contenido (con la URL de su sección),
-// 2) enlace externo del ítem, 3) enlace de la sección.
+// La tarjeta SIEMPRE abre la página de detalle interna del ítem, aunque
+// tenga enlace externo. El enlace externo (item.link) se muestra como
+// botón aparte ("Ver publicación completa") dentro del detalle.
 export function itemHref(item: SectionItem, section: Section): string {
-  if (item.content && item.content.trim()) {
-    const base =
-      section.link && section.link.startsWith('/')
-        ? section.link.replace(/\/+$/, '')
-        : '/publicaciones'
-    return `${base}/${item.id}`
-  }
-  if (item.link) return item.link
-  return section.link || '/publicaciones'
+  const base =
+    section.link && section.link.startsWith('/')
+      ? section.link.replace(/\/+$/, '')
+      : '/publicaciones'
+  return `${base}/${item.id}`
 }
 
 export function defaultSection(order: number): Section {

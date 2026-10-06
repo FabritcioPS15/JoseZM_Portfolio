@@ -25,7 +25,10 @@ import {
   Clock,
   Briefcase,
   PenTool,
+  Pencil,
+  RefreshCw,
   Search,
+  TriangleAlert,
 } from 'lucide-react'
 import {
   defaultSection,
@@ -54,7 +57,8 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 
-type Status = 'loading' | 'login' | 'ready'
+type Status = 'loading' | 'login' | 'ready' | 'error'
+type LoadResult = 'ok' | 'auth' | 'error'
 
 const ICON_OPTIONS: { value: SectionIcon; label: string }[] = [
   { value: 'briefcase', label: 'Maletín (servicios)' },
@@ -103,20 +107,25 @@ export default function AdminPage() {
     else toast.error(text)
   }, [])
 
-  const loadSections = useCallback(async () => {
+  const loadSections = useCallback(async (): Promise<LoadResult> => {
     try {
       const res = await fetch('/api/sections')
-      const data = await res.json()
+      if (res.status === 401) return 'auth'
+      const data = await res.json().catch(() => ({}))
       if (Array.isArray(data.sections)) {
         setSections(data.sections)
         setDirtyIds(new Set())
-      } else {
-        notify('error', data.error || 'No se pudieron cargar las secciones')
+        return 'ok'
       }
+      return 'error'
     } catch {
-      notify('error', 'Error de conexión al cargar las secciones')
+      return 'error'
     }
-  }, [notify])
+  }, [])
+
+  const applyLoadResult = (result: LoadResult) => {
+    setStatus(result === 'ok' ? 'ready' : result === 'auth' ? 'login' : 'error')
+  }
 
   useEffect(() => {
     const check = async () => {
@@ -124,8 +133,7 @@ export default function AdminPage() {
         const res = await fetch('/api/auth/me')
         const data = await res.json()
         if (data.authenticated) {
-          setStatus('ready')
-          await loadSections()
+          applyLoadResult(await loadSections())
         } else {
           setStatus('login')
         }
@@ -162,8 +170,7 @@ export default function AdminPage() {
       })
       if (res.ok) {
         setPassword('')
-        setStatus('ready')
-        await loadSections()
+        applyLoadResult(await loadSections())
       } else {
         const data = await res.json().catch(() => ({}))
         notify('error', data.error || 'Contraseña incorrecta')
@@ -173,6 +180,11 @@ export default function AdminPage() {
     } finally {
       setBusy(false)
     }
+  }
+
+  const retryLoad = async () => {
+    setStatus('loading')
+    applyLoadResult(await loadSections())
   }
 
   const handleLogout = async () => {
@@ -210,6 +222,15 @@ export default function AdminPage() {
   }
 
   const addItem = (sectionId: string) => {
+    if (expandedItemId && dirtyIds.has(sectionId)) {
+      const ok = window.confirm(
+        'Estás editando una publicación y esta categoría tiene cambios sin guardar.\n\n' +
+          'Al añadir una nueva ahora, se cerrará el editor actual. Tus cambios no se pierden, ' +
+          'pero tendrás que volver a abrir esa publicación para guardarlos.\n\n' +
+          '¿Quieres añadir la publicación?'
+      )
+      if (!ok) return
+    }
     const section = sections.find((s) => s.id === sectionId)
     const last = section?.items[section.items.length - 1]
     const item: SectionItem = {
@@ -432,6 +453,9 @@ export default function AdminPage() {
     }
   }
 
+  const selectedIndex = sections.findIndex((s) => s.id === selectedId)
+  const selectedSection = selectedIndex >= 0 ? sections[selectedIndex] : null
+
   // Atajo de teclado: Ctrl/Cmd+S guarda los cambios pendientes. Se registra una
   // sola vez y lee el estado actual a través de un ref, en vez de añadir y
   // quitar el listener en cada render.
@@ -519,8 +543,50 @@ export default function AdminPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-sm text-gray-400">Cargando...</div>
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-5 px-4">
+        <div className="relative w-12 h-12">
+          <div className="absolute inset-0 rounded-full border-4 border-brand-gold/20"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-brand-gold animate-spin"></div>
+        </div>
+        <div className="text-center">
+          <p className="text-sm font-bold text-brand-navy tracking-wider uppercase">
+            Cargando publicaciones
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            Preparando el editor con tus publicaciones guardadas
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-5 px-4 text-center">
+        <div className="w-12 h-12 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center">
+          <TriangleAlert size={22} className="text-red-500" />
+        </div>
+        <div>
+          <h1 className="text-base font-bold text-brand-navy">
+            No se pudieron cargar las publicaciones
+          </h1>
+          <p className="text-xs text-gray-400 mt-1 max-w-sm">
+            Hubo un problema al conectar con el servidor. Comprueba tu conexión e
+            inténtalo de nuevo.
+          </p>
+        </div>
+        <button
+          onClick={() => void retryLoad()}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-navy text-white text-xs font-bold tracking-wider uppercase hover:bg-brand-navy/90 transition-colors"
+        >
+          <RefreshCw size={14} className="text-brand-gold" /> Reintentar
+        </button>
+        <Link
+          href="/"
+          className="text-xs text-gray-400 hover:text-brand-gold transition-colors"
+        >
+          ← Volver al inicio
+        </Link>
       </div>
     )
   }
@@ -579,9 +645,6 @@ export default function AdminPage() {
       </div>
     )
   }
-
-  const selectedIndex = sections.findIndex((s) => s.id === selectedId)
-  const selectedSection = selectedIndex >= 0 ? sections[selectedIndex] : null
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -1027,9 +1090,18 @@ export default function AdminPage() {
                     </div>
 
                     {selectedSection.items.length === 0 && (
-                      <p className="text-xs text-gray-400 bg-gray-50 rounded-lg px-4 py-3 border border-dashed border-gray-200">
-                        Sin publicaciones todavía. Pulsa "Añadir publicación" para crear la primera.
-                      </p>
+                      <div className="text-center bg-gray-50 rounded-xl px-4 py-8 border border-dashed border-gray-200 space-y-3">
+                        <FilePlus2 size={26} className="mx-auto text-gray-300" />
+                        <p className="text-xs text-gray-400">
+                          Sin publicaciones todavía. Crea la primera para empezar.
+                        </p>
+                        <button
+                          onClick={() => addItem(selectedSection.id)}
+                          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-brand-navy text-white text-xs font-bold tracking-wider uppercase hover:bg-brand-navy/90 transition-colors"
+                        >
+                          <Plus size={14} className="text-brand-gold" /> Añadir publicación
+                        </button>
+                      </div>
                     )}
 
                     <DndContext
@@ -1056,7 +1128,7 @@ export default function AdminPage() {
                                 {/* Fila compacta: imagen principal + nombre */}
                                 <div
                                   onClick={() => setExpandedItemId(isExpanded ? null : item.id)}
-                                  className="w-full flex items-center gap-3 px-3 py-2.5 cursor-pointer bg-white hover:bg-cream/40 transition-colors"
+                                  className="w-full flex items-center gap-3 px-3 py-2.5 cursor-pointer bg-white hover:bg-cream/40 transition-colors group"
                                 >
                                   <span className="w-14 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100 flex items-center justify-center border border-gray-100">
                                     {item.image ? (
@@ -1094,6 +1166,9 @@ export default function AdminPage() {
                                     </span>
                                   </span>
                                   <span className="flex items-center gap-2 flex-shrink-0">
+                                    <span className="hidden sm:inline-flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider text-brand-gold bg-cream border border-brand-gold/30 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <Pencil size={10} /> {isExpanded ? 'Editando' : 'Editar'}
+                                    </span>
                                     <span className="flex flex-col">
                                       <button
                                         onClick={(e) => {
@@ -1183,6 +1258,15 @@ export default function AdminPage() {
                         })}
                       </SortableContext>
                     </DndContext>
+
+                    {selectedSection.items.length > 0 && (
+                      <button
+                        onClick={() => addItem(selectedSection.id)}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-brand-gold/40 text-brand-gold text-xs font-bold tracking-wider uppercase hover:bg-cream hover:border-brand-gold transition-colors"
+                      >
+                        <Plus size={14} /> Añadir publicación
+                      </button>
+                    )}
                   </div>
 
                   {/* Vista previa */}

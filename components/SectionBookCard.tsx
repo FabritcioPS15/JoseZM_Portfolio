@@ -64,7 +64,7 @@ export default function SectionBookCard({
           {/* Left: Book Cover Mockup */}
           <div className="col-span-4 flex justify-center py-2">
             <div className="transform -rotate-3 transition-transform duration-300 group-hover:rotate-0">
-              <BookCover title={item?.title} author={item?.meta} size="sm" />
+              <BookCover title={item?.title} author={item?.meta} image={item?.image} size="sm" />
             </div>
           </div>
 

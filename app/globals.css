@@ -6,8 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-serif: 'Space Grotesk', sans-serif;
-  --font-sans: 'Inter', sans-serif;
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-dm-sans);
   --color-brand-navy: #0F2440;
   --color-brand-gold: #C9A35C;
   --color-cream: #FDF3E3;
@@ -318,4 +318,42 @@
   select {
     color: var(--foreground);
   }
+}
+
+.react-calendar {
+  width: auto;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+}
+
+.react-calendar .react-calendar__tile--active,
+.react-calendar .react-calendar__tile--active:enabled:hover,
+.react-calendar .react-calendar__tile--active:enabled:focus {
+  background: #0f2440;
+  color: #fff;
+  font-weight: 700;
+}
+
+.react-calendar .react-calendar__tile:enabled:hover,
+.react-calendar .react-calendar__tile:enabled:focus {
+  background: #fdf3e3;
+  color: #0f2440;
+}
+
+.react-calendar .react-calendar__tile--now {
+  background: transparent;
+  color: #c9a35c;
+  font-weight: 700;
+}
+
+.react-calendar .react-calendar__navigation button {
+  color: #0f2440;
+  font-weight: 700;
+  border-radius: 6px;
+}
+
+.react-calendar .react-calendar__navigation button:enabled:hover,
+.react-calendar .react-calendar__navigation button:enabled:focus {
+  background: #fdf3e3;
 }

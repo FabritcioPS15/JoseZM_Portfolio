@@ -1,18 +1,19 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
-import { Space_Grotesk, Inter } from 'next/font/google'
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import './globals.css'
 
-const spaceGrotesk = Space_Grotesk({
+const cormorantGaramond = Cormorant_Garamond({
   subsets: ['latin'],
-  variable: '--font-serif',
-  weight: ['400', '500', '600', '700']
+  variable: '--font-cormorant',
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
 })
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ['latin'],
-  variable: '--font-sans',
-  weight: ['400', '500', '600', '700']
+  variable: '--font-dm-sans',
+  weight: 'variable',
 })
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://joseluiszelada.pe'
@@ -80,7 +81,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`light ${spaceGrotesk.variable} ${inter.variable}`}>
+    <html lang="es" className={`light ${cormorantGaramond.variable} ${dmSans.variable}`}>
       <body className="antialiased font-sans bg-white text-foreground">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

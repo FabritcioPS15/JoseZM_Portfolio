@@ -6,22 +6,66 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X, ArrowRight, Mail } from 'lucide-react'
 
+type NavItem = { label: string; href: string } | { label: string; anchor: string }
+
+const NAV_ITEMS: NavItem[] = [
+  { label: 'INICIO', anchor: 'top' },
+  { label: 'SOBRE MÍ', anchor: 'trayectoria' },
+  { label: 'INVESTIGACIONES', href: '/investigaciones' },
+  { label: 'ARTÍCULOS', href: '/articulos' },
+  { label: 'PUBLICACIONES', href: '/publicaciones' },
+]
+
+const HEADER_OFFSET = 80
+
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [activeAnchor, setActiveAnchor] = useState('top')
   const pathname = usePathname()
   const router = useRouter()
   const isHome = pathname === '/'
 
+  const isActive = (item: NavItem) =>
+    'href' in item
+      ? pathname === item.href || pathname.startsWith(`${item.href}/`)
+      : isHome && activeAnchor === item.anchor
+
+  const scrollToAnchor = (anchor: string) => {
+    if (anchor === 'top') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
+    const el = document.getElementById(anchor)
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET
+    window.scrollTo({ top, behavior: 'smooth' })
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
+      if (pathname !== '/') return
+      const section = document.getElementById('trayectoria')
+      const overSection = section
+        ? window.scrollY >= section.offsetTop - HEADER_OFFSET
+        : false
+      setActiveAnchor(overSection ? 'trayectoria' : 'top')
     }
 
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [pathname])
+
+  useEffect(() => {
+    if (!isHome) return
+    const hash = decodeURIComponent(window.location.hash.slice(1))
+    if (!hash) return
+    setActiveAnchor(hash)
+    const timer = setTimeout(() => scrollToAnchor(hash), 150)
+    return () => clearTimeout(timer)
+  }, [isHome])
 
   useEffect(() => {
     if (!isMobileMenuOpen) return
@@ -40,26 +84,18 @@ export default function Header() {
     }
   }, [isMobileMenuOpen])
 
-  const navItems = [
-    { label: 'INICIO', target: 'top' },
-    { label: 'SOBRE MÍ', target: 'inicio' },
-    { label: 'INVESTIGACIONES', href: '/investigaciones' },
-    { label: 'ARTÍCULOS', href: '/articulos' },
-    { label: 'PUBLICACIONES', href: '/publicaciones' },
-  ] as const
-
-  const handleNavClick = (target: string) => {
+  const handleNavClick = (anchor: string) => {
     setIsMobileMenuOpen(false)
+    setActiveAnchor(anchor)
     if (isHome) {
-      if (target === 'top') {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      } else {
-        document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' })
-      }
-    } else if (target === 'top') {
-      router.push('/')
+      window.history.replaceState(
+        null,
+        '',
+        anchor === 'top' ? window.location.pathname : `#${anchor}`
+      )
+      scrollToAnchor(anchor)
     } else {
-      router.push(`/#${target}`)
+      router.push(anchor === 'top' ? '/' : `/#${anchor}`)
     }
   }
 
@@ -69,7 +105,8 @@ export default function Header() {
         }`}
     >
       {/* Top gradient line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold to-transparent transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'
+        }`}></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -89,24 +126,30 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-5">
-            {navItems.map((item, index) => {
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(item)
               const itemClassName = `text-[13px] font-semibold tracking-wider transition-all duration-300 relative pb-2 ${
-                index === 0 ? 'text-brand-navy' : 'text-brand-navy hover:text-brand-gold'
+                active ? 'text-brand-navy' : 'text-brand-navy hover:text-brand-gold'
               } group`
-              const underline = index === 0 ? (
+              const underline = active ? (
                 <span className="absolute bottom-0 left-1/4 w-1/2 h-0.5 bg-brand-gold transition-all duration-300"></span>
               ) : (
                 <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-brand-gold group-hover:w-1/2 group-hover:left-1/4 transition-all duration-300"></span>
               )
               return 'href' in item ? (
-                <Link key={item.label} href={item.href} className={itemClassName}>
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  aria-current={active ? 'page' : undefined}
+                  className={itemClassName}
+                >
                   {item.label}
                   {underline}
                 </Link>
               ) : (
                 <button
                   key={item.label}
-                  onClick={() => handleNavClick(item.target)}
+                  onClick={() => handleNavClick(item.anchor)}
                   className={itemClassName}
                 >
                   {item.label}
@@ -150,7 +193,8 @@ export default function Header() {
           </div>
 
           <div className="max-h-[calc(100dvh-9rem)] overflow-y-auto">
-            {navItems.map((item, idx) => {
+            {NAV_ITEMS.map((item, idx) => {
+              const active = isActive(item)
               const inner = (
                 <>
                   <span className="flex items-center gap-4">
@@ -162,12 +206,15 @@ export default function Header() {
                   <ArrowRight size={16} className="text-gray-300 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-brand-gold" />
                 </>
               )
-              const itemClassName =
-                'group flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold tracking-wider text-brand-navy transition-colors duration-200 hover:bg-cream hover:text-brand-gold border-b border-gray-100 last:border-b-0 active:bg-cream'
+              const itemClassName = `group flex w-full items-center justify-between px-5 py-4 text-left text-sm font-semibold tracking-wider transition-colors duration-200 border-b border-gray-100 last:border-b-0 ${active
+                ? 'bg-cream text-brand-gold'
+                : 'text-brand-navy hover:bg-cream hover:text-brand-gold active:bg-cream'
+                }`
               return 'href' in item ? (
                 <Link
                   key={item.label}
                   href={item.href}
+                  aria-current={active ? 'page' : undefined}
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={itemClassName}
                 >
@@ -176,7 +223,7 @@ export default function Header() {
               ) : (
                 <button
                   key={item.label}
-                  onClick={() => handleNavClick(item.target)}
+                  onClick={() => handleNavClick(item.anchor)}
                   className={itemClassName}
                 >
                   {inner}
