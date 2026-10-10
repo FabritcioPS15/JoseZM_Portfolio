@@ -1,6 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
+import ScrollToTopOnNavigate from '@/components/ScrollToTopOnNavigate'
+import LogoLoader from '@/components/LogoLoader'
 import './globals.css'
 
 const cormorantGaramond = Cormorant_Garamond({
@@ -83,6 +85,8 @@ export default function RootLayout({
   return (
     <html lang="es" className={`light ${cormorantGaramond.variable} ${dmSans.variable}`}>
       <body className="antialiased font-sans bg-white text-foreground">
+        <LogoLoader />
+        <ScrollToTopOnNavigate />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

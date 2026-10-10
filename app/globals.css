@@ -309,8 +309,17 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Base ligeramente más grande y con más aire: mejora la legibilidad sin
+     cambiar la tipografía (DM Sans / Cormorant Garamond). */
+  html {
+    font-size: 106.25%; /* 17px sobre 16px */
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground;
+    line-height: 1.7;
+    letter-spacing: 0.003em;
+    text-rendering: optimizeLegibility;
   }
   /* Formularios: el texto SIEMPRE debe verse oscuro, sin importar el tema */
   input,
@@ -318,6 +327,18 @@
   select {
     color: var(--foreground);
   }
+}
+
+/* Máscara del logo (loader): usa el SVG como forma para poder "rellenarlo". */
+.logo-mask {
+  -webkit-mask-image: url('/images/JLZlogo.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url('/images/JLZlogo.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
 }
 
 .react-calendar {

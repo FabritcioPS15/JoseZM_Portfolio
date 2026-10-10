@@ -399,6 +399,19 @@ export default function AdminPage() {
     }
   }
 
+  // Guarda una publicación concreta sin cerrar su editor. La publicación vive
+  // dentro del JSONB de la sección, así que se persiste la categoría entera.
+  const saveItem = async (sectionId: string) => {
+    const section = sections.find((s) => s.id === sectionId)
+    if (!section) return
+    setBusy(true)
+    try {
+      await persist(section.id, section, 'Publicación guardada')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   // Guarda todas las secciones con cambios pendientes, una por una.
   const saveAllSections = async () => {
     const dirty = sections.filter((s) => dirtyIds.has(s.id))
@@ -1244,6 +1257,8 @@ export default function AdminPage() {
                                         )
                                         void persist(next.id, next, 'Imagen guardada')
                                       }}
+                                      onSave={() => void saveItem(selectedSection.id)}
+                                      saving={busy}
                                       autoFocus={
                                         !item.title &&
                                         !item.description &&

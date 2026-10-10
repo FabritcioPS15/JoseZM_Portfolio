@@ -17,6 +17,7 @@ import {
   ChevronDown,
   Link2,
   CalendarDays,
+  Save,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { SectionItem, SectionType } from '@/lib/sections'
@@ -26,7 +27,7 @@ import RichTextEditor from './RichTextEditor'
 type ValuePiece = Date | null
 type Value = ValuePiece | [ValuePiece, ValuePiece]
 
-const CATEGORIES = ['Investigaciones', 'Artículos', 'Libros']
+const CATEGORIES = ['Investigaciones', 'Artículos', 'Publicaciones']
 
 const inputClass =
   'w-full px-3 py-2 rounded-md border border-gray-200 text-sm bg-white transition-colors placeholder:text-gray-300 focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25'
@@ -115,6 +116,8 @@ export default function ItemEditor({
   onChange,
   onRemove,
   onUploaded,
+  onSave,
+  saving = false,
   autoFocus = false,
 }: {
   item: SectionItem
@@ -124,6 +127,9 @@ export default function ItemEditor({
   onRemove: () => void
   /** Se llama tras subir la imagen para aplicarla y persistirla sin pulsar Guardar. */
   onUploaded?: (url: string) => void
+  /** Persiste la publicación (guarda la categoría que la contiene). */
+  onSave?: () => void
+  saving?: boolean
   autoFocus?: boolean
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -627,6 +633,25 @@ export default function ItemEditor({
             </Field>
           </div>
         </Block>
+
+        {/* ---- Guardar publicación ---- */}
+        {onSave && (
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={onSave}
+              disabled={saving}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-navy text-white text-xs font-bold tracking-wider uppercase hover:bg-brand-navy/90 transition-colors disabled:opacity-50"
+            >
+              {saving ? (
+                <Loader2 size={14} className="animate-spin text-brand-gold" />
+              ) : (
+                <Save size={14} className="text-brand-gold" />
+              )}
+              Guardar publicación
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

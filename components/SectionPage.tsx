@@ -2,6 +2,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 import PublicacionesList from '@/components/PublicacionesList'
+import Reveal from '@/components/Reveal'
 import { getSections } from '@/lib/sections'
 
 export default async function SectionPage({
@@ -28,7 +29,7 @@ export default async function SectionPage({
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[500px] h-[500px] bg-brand-gold/5 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-[420px] h-[420px] bg-brand-navy/5 rounded-full blur-3xl pointer-events-none"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center">
+          <Reveal className="text-center">
             <p className="text-brand-gold text-xs md:text-sm font-bold mb-3 uppercase tracking-[0.2em] flex items-center justify-center gap-3">
               <span className="w-8 h-px bg-brand-gold"></span>
               {eyebrow}
@@ -43,7 +44,7 @@ export default async function SectionPage({
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cream border border-brand-gold/30 text-[11px] font-bold uppercase tracking-wider text-brand-navy">
               {count} {count === 1 ? 'publicación' : 'publicaciones'}
             </span>
-          </div>
+          </Reveal>
         </div>
       </section>
 

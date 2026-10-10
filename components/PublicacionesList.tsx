@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Search, X, ArrowRight } from 'lucide-react'
+import { Search, X, ArrowRight, ChevronDown } from 'lucide-react'
 import type { Section, SectionItem } from '@/lib/sections'
 import { itemHref } from '@/lib/sections'
 import { SectionIcon } from './SectionCarouselCard'
@@ -11,7 +11,7 @@ import PublicacionCard from './PublicacionCard'
 
 const CONTACT_MAIL = 'mailto:contacto@joseluiszelada.pe'
 
-const CATEGORIES = ['Todo', 'Investigaciones', 'Artículos', 'Libros']
+const CATEGORIES = ['Todo', 'Investigaciones', 'Artículos', 'Publicaciones']
 
 function normalize(s: string) {
   return s
@@ -28,8 +28,12 @@ function matches(item: SectionItem, query: string, category: string) {
       catOk = itemCat === 'Investigación' || itemCat === 'Investigaciones'
     } else if (category === 'Artículos') {
       catOk = itemCat === 'Artículo' || itemCat === 'Artículos'
-    } else if (category === 'Libros') {
-      catOk = itemCat === 'Libro' || itemCat === 'Libros'
+    } else if (category === 'Publicaciones') {
+      catOk =
+        itemCat === 'Publicación' ||
+        itemCat === 'Publicaciones' ||
+        itemCat === 'Libro' ||
+        itemCat === 'Libros'
     } else {
       catOk = itemCat === category
     }
@@ -94,6 +98,8 @@ export default function PublicacionesList({ sections }: { sections: Section[] })
     [sections]
   )
 
+
+
   if (sections.length === 0) {
     return (
       <div className="text-center py-20 text-sm text-gray-600">
@@ -113,52 +119,80 @@ export default function PublicacionesList({ sections }: { sections: Section[] })
 
   return (
     <div ref={containerRef} className="space-y-16">
-      {/* Toolbar: búsqueda + filtros */}
+      {/* Toolbar: búsqueda + filtros en una sola fila */}
       <div
-        className="sticky top-20 z-30 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm p-4 md:p-5 flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between"
+        className="sticky top-20 z-30 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm p-3 md:p-4 space-y-3"
         style={entrance()}
       >
-        <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por título, autor o etiqueta…"
-            className="w-full pl-11 pr-9 py-2.5 rounded-full border border-gray-200 bg-gray-50 text-sm text-brand-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold/40 focus:border-brand-gold/60 transition"
-          />
-          {query && (
-            <button
-              onClick={() => setQuery('')}
-              aria-label="Limpiar búsqueda"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-navy transition-colors"
+        <div className="flex flex-wrap items-center gap-2.5 md:gap-3">
+          <div className="relative flex-1 min-w-[220px]">
+            <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar por título, autor o etiqueta…"
+              className="w-full pl-11 pr-9 py-2.5 rounded-full border border-gray-200 bg-gray-50 text-sm text-brand-navy placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-gold/40 focus:border-brand-gold/60 transition"
+            />
+            {query && (
+              <button
+                onClick={() => setQuery('')}
+                aria-label="Limpiar búsqueda"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-navy transition-colors"
+              >
+                <X size={15} />
+              </button>
+            )}
+          </div>
+
+          <div className="relative flex-shrink-0">
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              aria-label="Filtrar por categoría"
+              className="appearance-none w-full sm:w-60 pl-4 pr-10 py-2.5 rounded-full border border-gray-200 bg-gray-50 text-sm font-semibold text-brand-navy focus:outline-none focus:ring-2 focus:ring-brand-gold/40 focus:border-brand-gold/60 transition cursor-pointer"
             >
-              <X size={15} />
+              <option value="Todo">Todas las categorías</option>
+              {CATEGORIES.filter((c) => c !== 'Todo').map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              size={15}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-gold pointer-events-none"
+            />
+          </div>
+        </div>
+
+        {/* Contador de resultados */}
+        <div className="flex items-center justify-between gap-3 pt-0.5">
+          <p className="text-xs text-gray-500 font-medium">
+            {query || category !== 'Todo' ? (
+              <>
+                Mostrando <span className="font-bold text-brand-navy">{visibleCount}</span> de{' '}
+                {total} publicaciones
+              </>
+            ) : (
+              <>
+                {total} {total === 1 ? 'publicación' : 'publicaciones'} en total
+              </>
+            )}
+          </p>
+          {(query || category !== 'Todo') && (
+            <button
+              onClick={() => {
+                setQuery('')
+                setCategory('Todo')
+              }}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-navy hover:text-brand-gold transition-colors"
+            >
+              <X size={12} /> Limpiar filtros
             </button>
           )}
         </div>
-
-        <div className="flex items-center gap-2 flex-wrap">
-          {CATEGORIES.map((c) => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all duration-300 ${
-                category === c
-                  ? 'bg-brand-navy text-white shadow-md'
-                  : 'bg-white border border-gray-200 text-gray-500 hover:border-brand-gold/60 hover:text-brand-navy'
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
       </div>
-
-      {/* Contador de resultados */}
-      <p className="text-xs text-gray-500 font-medium -mt-8">
-        Mostrando {visibleCount} de {total} publicaciones
-      </p>
 
       {visibleSections.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-gray-200">
@@ -183,16 +217,18 @@ export default function PublicacionesList({ sections }: { sections: Section[] })
             >
               {/* Section header */}
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-9 h-9 rounded-lg bg-cream flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-cream flex items-center justify-center ring-1 ring-brand-gold/30 flex-shrink-0">
                   <SectionIcon icon={section.icon} size={18} />
                 </div>
-                <h2 className="text-lg md:text-2xl font-serif font-bold text-brand-navy tracking-wider uppercase">
-                  {section.title}
-                </h2>
-                <span className="h-px flex-1 bg-brand-gold/30"></span>
-                <span className="text-[11px] text-gray-600 font-semibold whitespace-nowrap">
-                  {items.length} {items.length === 1 ? 'publicación' : 'publicaciones'}
-                </span>
+                <div className="min-w-0">
+                  <h2 className="text-lg md:text-2xl font-serif font-bold text-brand-navy tracking-wide uppercase leading-tight">
+                    {section.title}
+                  </h2>
+                  <p className="text-[11px] text-gray-400 font-medium mt-0.5">
+                    {items.length} {items.length === 1 ? 'publicación' : 'publicaciones'}
+                  </p>
+                </div>
+                <span className="h-px flex-1 bg-gradient-to-r from-brand-gold/40 to-transparent"></span>
               </div>
 
               {section.type === 'book' ? (
