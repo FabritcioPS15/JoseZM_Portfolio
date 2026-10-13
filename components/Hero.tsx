@@ -4,9 +4,17 @@ import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { ArrowRight, Users, Cog, Lightbulb, Target } from 'lucide-react'
 
+const FEATURES = [
+  { icon: Users, title: 'ENFOQUE EN PERSONAS', text: 'Equipos comprometidos y de alto desempeño.', gold: false },
+  { icon: Cog, title: 'PROCESOS EFICIENTES', text: 'Menos reprocesos, más productividad.', gold: false },
+  { icon: Lightbulb, title: 'SOLUCIONES PRÁCTICAS', text: 'Aplicables a la realidad de cada organización.', gold: true },
+  { icon: Target, title: 'RESULTADOS SOSTENIBLES', text: 'Crecimiento con impacto en el tiempo.', gold: false },
+] as const
+
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isVisible, setIsVisible] = useState(false)
+  const [openFeature, setOpenFeature] = useState<number | null>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -69,7 +77,7 @@ export default function Hero() {
 
             {/* Left Column: Headlines & CTAs */}
             <div
-              className="lg:col-span-7 xl:col-span-7 text-left space-y-6"
+              className="lg:col-span-7 xl:col-span-7 text-center lg:text-left space-y-6"
               style={{
                 animationName: isVisible ? 'fadeInUp' : 'none',
                 animationDuration: '0.8s',
@@ -94,15 +102,15 @@ export default function Hero() {
               </h1>
 
               {/* Description Paragraph */}
-              <p className="text-gray-300 text-sm sm:text-base md:text-[16px] lg:text-[17px] font-sans leading-relaxed max-w-xl font-normal">
+              <p className="text-gray-300 text-sm sm:text-base md:text-[16px] lg:text-[17px] font-sans leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
                 Ayudo a las empresas a fortalecer su talento humano, optimizar sus procesos y desarrollar modelos de gestión orientados a resultados, productividad y crecimiento sostenible.
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 pt-2 sm:pt-4">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 sm:pt-4">
                 <button
                   onClick={() => scrollToSection('servicios')}
-                  className="inline-flex items-center justify-center gap-2.5 bg-brand-gold hover:bg-[#b8924b] text-[#0B1522] font-sans font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-[4px] shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-gold hover:bg-[#b8924b] text-[#0B1522] font-sans font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-[4px] shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group cursor-pointer"
                 >
                   <span>Conoce mis servicios</span>
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
@@ -110,16 +118,16 @@ export default function Hero() {
 
                 <button
                   onClick={() => scrollToSection('trayectoria')}
-                  className="inline-flex items-center justify-center bg-[#10233D]/90 hover:bg-[#183155] text-white border border-gray-600/80 font-sans font-medium text-xs sm:text-sm px-7 py-3.5 rounded-[4px] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center bg-[#10233D]/90 hover:bg-[#183155] text-white border border-gray-600/80 font-sans font-medium text-xs sm:text-sm px-7 py-3.5 rounded-[4px] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
                 >
                   Sobre mí
                 </button>
               </div>
             </div>
 
-            {/* Right Column: Floating Quote Card on desktop / visible on tablet */}
+            {/* Right Column: Floating Quote Card (desktop only) */}
             <div
-              className="lg:col-span-5 xl:col-span-5 flex justify-start lg:justify-end mt-4 lg:mt-0 lg:translate-x-40 xl:translate-x-48 2xl:translate-x-56 lg:-translate-y-24 xl:-translate-y-28"
+              className="hidden lg:col-span-5 xl:col-span-5 lg:flex lg:justify-end lg:translate-x-40 xl:translate-x-48 2xl:translate-x-56 lg:-translate-y-24 xl:-translate-y-28"
               style={{
                 animationName: isVisible ? 'fadeInUp' : 'none',
                 animationDuration: '0.8s',
@@ -147,72 +155,61 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Bottom 4-Column Feature / Value Proposition Bar */}
-      <div className="w-full bg-white border-t border-b border-gray-200/90 py-5 sm:py-6 relative z-20 shadow-sm flex-shrink-0">
+      {/* Bottom Feature / Value Proposition Bar */}
+      <div className="w-full bg-white border-t border-b border-gray-200/90 py-1 sm:py-6 relative z-20 shadow-sm flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
 
-            {/* Feature 1 */}
-            <div className="flex items-center gap-3.5">
-              <div className="flex-shrink-0 text-brand-navy">
-                <Users size={32} strokeWidth={2.2} />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="font-sans font-bold text-xs sm:text-[13px] text-brand-navy tracking-wide uppercase leading-tight">
-                  ENFOQUE EN PERSONAS
-                </span>
-                <span className="font-sans text-[11px] sm:text-xs text-gray-600 font-normal leading-snug mt-0.5">
-                  Equipos comprometidos y de alto desempeño.
-                </span>
-              </div>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="flex items-center gap-3.5">
-              <div className="flex-shrink-0 text-brand-navy">
-                <Cog size={32} strokeWidth={2.2} />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="font-sans font-bold text-xs sm:text-[13px] text-brand-navy tracking-wide uppercase leading-tight">
-                  PROCESOS EFICIENTES
-                </span>
-                <span className="font-sans text-[11px] sm:text-xs text-gray-600 font-normal leading-snug mt-0.5">
-                  Menos reprocesos, más productividad.
-                </span>
-              </div>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="flex items-center gap-3.5">
-              <div className="flex-shrink-0 text-brand-gold">
-                <Lightbulb size={32} strokeWidth={2.2} />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="font-sans font-bold text-xs sm:text-[13px] text-brand-navy tracking-wide uppercase leading-tight">
-                  SOLUCIONES PRÁCTICAS
-                </span>
-                <span className="font-sans text-[11px] sm:text-xs text-gray-600 font-normal leading-snug mt-0.5">
-                  Aplicables a la realidad de cada organización.
-                </span>
-              </div>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="flex items-center gap-3.5">
-              <div className="flex-shrink-0 text-brand-navy">
-                <Target size={32} strokeWidth={2.2} />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="font-sans font-bold text-xs sm:text-[13px] text-brand-navy tracking-wide uppercase leading-tight">
-                  RESULTADOS SOSTENIBLES
-                </span>
-                <span className="font-sans text-[11px] sm:text-xs text-gray-600 font-normal leading-snug mt-0.5">
-                  Crecimiento con impacto en el tiempo.
-                </span>
-              </div>
-            </div>
-
+          {/* Mobile: el nombre se despliega en línea y empuja a los demás iconos */}
+          <div className="lg:hidden flex flex-nowrap items-center justify-center gap-x-0.5 py-4 overflow-hidden">
+            {FEATURES.map((feature, index) => {
+              const Icon = feature.icon
+              const open = openFeature === index
+              return (
+                <button
+                  key={feature.title}
+                  type="button"
+                  onClick={() => setOpenFeature(open ? null : index)}
+                  aria-expanded={open}
+                  aria-label={feature.title}
+                  className={`flex items-center gap-1 px-1.5 py-1.5 rounded transition-colors duration-300 cursor-pointer ${open ? 'bg-brand-navy/5' : ''}`}
+                >
+                  <div className={`shrink-0 ${feature.gold ? 'text-brand-gold' : 'text-brand-navy'} ${open ? '' : 'opacity-60'}`}>
+                    <Icon size={28} strokeWidth={2.2} />
+                  </div>
+                  <span
+                    className={`overflow-hidden whitespace-nowrap font-sans font-bold text-[10px] text-brand-navy tracking-wide uppercase transition-all duration-300 ${
+                      open ? 'max-w-[190px] opacity-100' : 'max-w-0 opacity-0'
+                    }`}
+                  >
+                    {feature.title}
+                  </span>
+                </button>
+              )
+            })}
           </div>
+
+          {/* Desktop: fila de 4 columnas */}
+          <div className="hidden lg:grid grid-cols-4 gap-8">
+            {FEATURES.map((feature) => {
+              const Icon = feature.icon
+              return (
+                <div key={feature.title} className="flex items-center gap-3.5">
+                  <div className={`flex-shrink-0 ${feature.gold ? 'text-brand-gold' : 'text-brand-navy'}`}>
+                    <Icon size={32} strokeWidth={2.2} />
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-sans font-bold text-[13px] text-brand-navy tracking-wide uppercase leading-tight">
+                      {feature.title}
+                    </span>
+                    <span className="font-sans text-xs text-gray-600 font-normal leading-snug mt-0.5">
+                      {feature.text}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
         </div>
       </div>
     </section>
