@@ -115,13 +115,6 @@ export default function Hero() {
                   <span>Conoce mis servicios</span>
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
                 </button>
-
-                <button
-                  onClick={() => scrollToSection('trayectoria')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center bg-[#10233D]/90 hover:bg-[#183155] text-white border border-gray-600/80 font-sans font-medium text-xs sm:text-sm px-7 py-3.5 rounded-[4px] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
-                >
-                  Sobre mí
-                </button>
               </div>
             </div>
 
@@ -139,14 +132,11 @@ export default function Hero() {
             >
               <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-5 max-w-[220px] sm:max-w-[245px] lg:max-w-[255px] border border-gray-100 text-left transition-transform duration-300 hover:scale-[1.02]">
                 <p className="font-serif text-[#0F2440] text-sm sm:text-[15px] font-medium leading-snug">
-                  “Organizaciones más humanas, eficientes y sostenibles son posibles.”
+                  “Gestión que conecta personas, procesos y resultados”
                 </p>
                 <div className="w-6 h-[1.5px] bg-brand-gold my-2.5"></div>
-                <p className="font-sans font-bold text-[10px] sm:text-[11px] uppercase tracking-wider text-[#0F2440]">
-                  JOSÉ LUIS ZELADA
-                </p>
                 <p className="font-sans text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5">
-                  Consultor en Recursos Humanos y Gestión Organizacional
+                  Consultoría en gestión organizacional, talento y mejora de procesos.
                 </p>
               </div>
             </div>
@@ -177,9 +167,8 @@ export default function Hero() {
                     <Icon size={28} strokeWidth={2.2} />
                   </div>
                   <span
-                    className={`overflow-hidden whitespace-nowrap font-sans font-bold text-[10px] text-brand-navy tracking-wide uppercase transition-all duration-300 ${
-                      open ? 'max-w-[190px] opacity-100' : 'max-w-0 opacity-0'
-                    }`}
+                    className={`overflow-hidden whitespace-nowrap font-sans font-bold text-[10px] text-brand-navy tracking-wide uppercase transition-all duration-300 ${open ? 'max-w-[190px] opacity-100' : 'max-w-0 opacity-0'
+                      }`}
                   >
                     {feature.title}
                   </span>

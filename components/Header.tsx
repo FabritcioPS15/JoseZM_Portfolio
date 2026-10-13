@@ -10,7 +10,6 @@ type NavItem = { label: string; href: string } | { label: string; anchor: string
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Inicio', anchor: 'inicio' },
-  { label: 'Sobre mí', anchor: 'trayectoria' },
   { label: 'Servicios', anchor: 'servicios' },
   { label: 'Publicaciones', href: '/publicaciones' },
   { label: 'Libros', href: '/publicaciones' },
@@ -47,7 +46,6 @@ export default function Header() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30)
       if (pathname !== '/') return
-      const trayectoriaEl = document.getElementById('trayectoria')
       const serviciosEl = document.getElementById('servicios') || document.getElementById('consultorías')
       const contactoEl = document.getElementById('contacto')
 
@@ -55,8 +53,6 @@ export default function Header() {
 
       if (contactoEl && scrollPos >= contactoEl.offsetTop) {
         setActiveAnchor('contacto')
-      } else if (trayectoriaEl && scrollPos >= trayectoriaEl.offsetTop) {
-        setActiveAnchor('trayectoria')
       } else if (serviciosEl && scrollPos >= serviciosEl.offsetTop) {
         setActiveAnchor('servicios')
       } else {
@@ -112,9 +108,8 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed w-full top-0 z-50 transition-all duration-300 backdrop-blur-md ${
-        isScrolled ? 'bg-white/95 shadow-md py-1.5' : 'bg-white py-2'
-      }`}
+      className={`fixed w-full top-0 z-50 transition-all duration-300 backdrop-blur-md ${isScrolled ? 'bg-white/95 shadow-md py-1.5' : 'bg-white py-2'
+        }`}
     >
       {/* Top subtle border */}
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-100"></div>
@@ -137,7 +132,7 @@ export default function Header() {
                 JOSÉ LUIS ZELADA
               </span>
               <span className="text-[10px] sm:text-[11px] text-gray-500 font-medium tracking-tight leading-tight mt-0.5">
-                Especialista en Recursos Humanos y Gestión Organizacional
+                Personas, Procesos y Resultados
               </span>
             </div>
           </Link>
@@ -147,9 +142,8 @@ export default function Header() {
             <nav className="flex items-center gap-6 xl:gap-7">
               {NAV_ITEMS.map((item) => {
                 const active = isActive(item)
-                const itemClassName = `text-[14px] font-medium tracking-normal transition-all duration-200 relative pb-1 ${
-                  active ? 'text-brand-navy font-semibold' : 'text-gray-700 hover:text-brand-gold'
-                }`
+                const itemClassName = `text-[14px] font-medium tracking-normal transition-all duration-200 relative pb-1 ${active ? 'text-brand-navy font-semibold' : 'text-gray-700 hover:text-brand-gold'
+                  }`
                 const underline = active ? (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold transition-all duration-300"></span>
                 ) : (

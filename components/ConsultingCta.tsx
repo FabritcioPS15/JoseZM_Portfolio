@@ -32,7 +32,7 @@ export default function ConsultingCta() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
-          
+
           {/* Left Text */}
           <div className="max-w-2xl text-left">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-white tracking-tight leading-tight">
@@ -51,14 +51,6 @@ export default function ConsultingCta() {
             >
               <span>Solicita una consultoría</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
-
-            <button
-              onClick={openWhatsApp}
-              className="inline-flex items-center justify-center gap-2.5 bg-[#10233D]/90 hover:bg-[#183155] text-white border border-gray-600/80 font-sans font-medium text-xs sm:text-sm px-6 py-3.5 rounded-[4px] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 cursor-pointer"
-            >
-              <WhatsAppIcon className="w-4 h-4 text-white" />
-              <span>Escríbeme</span>
             </button>
           </div>
 

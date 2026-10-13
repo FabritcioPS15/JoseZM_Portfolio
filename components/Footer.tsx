@@ -72,12 +72,6 @@ export default function Footer() {
                   Inicio
                 </button>
                 <button
-                  onClick={() => scrollToAnchor('trayectoria')}
-                  className="text-left text-gray-600 hover:text-brand-gold transition-colors duration-200 cursor-pointer"
-                >
-                  Sobre mí
-                </button>
-                <button
                   onClick={() => scrollToAnchor('servicios')}
                   className="text-left text-gray-600 hover:text-brand-gold transition-colors duration-200 cursor-pointer"
                 >

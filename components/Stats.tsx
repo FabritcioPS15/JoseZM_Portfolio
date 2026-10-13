@@ -11,12 +11,12 @@ const STATS_DATA = [
   },
   {
     icon: Users,
-    number: '+100',
+    number: '+10',
     label: 'organizaciones asesoradas',
   },
   {
     icon: FileText,
-    number: '+30',
+    number: '+10',
     label: 'artículos y publicaciones',
   },
   {

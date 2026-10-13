@@ -12,11 +12,13 @@ export default function BookCover({
   const isLg = size === 'lg'
 
   return (
-    <div
-      className={`relative flex flex-col justify-between text-center overflow-hidden rounded-[3px] shadow-lg border border-brand-gold/40 bg-gradient-to-br from-[#16305a] via-brand-navy to-[#0a1929] ${
-        isLg ? 'w-56 h-80 p-4' : 'w-[85px] h-[125px] p-2'
-      }`}
-    >
+    <div className={`book3d-scene ${isLg ? 'w-56 h-80' : 'w-[85px] h-[125px]'}`}>
+      <div className="book3d">
+        <div
+          className={`book3d-face flex flex-col justify-between text-center rounded-[3px] shadow-lg border border-brand-gold/40 bg-gradient-to-br from-[#16305a] via-brand-navy to-[#0a1929] ${
+            isLg ? 'p-4' : 'p-2'
+          }`}
+        >
       {/* Spine highlight */}
       <div className="absolute left-0 top-0 bottom-0 w-[5px] bg-gradient-to-r from-black/45 via-black/15 to-transparent z-10"></div>
       {/* Page edges */}
@@ -78,6 +80,8 @@ export default function BookCover({
           </div>
         </>
       )}
+        </div>
+      </div>
     </div>
   )
 }
