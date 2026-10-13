@@ -37,22 +37,26 @@ export default function Hero() {
   }
 
   return (
-    <section id="inicio" ref={containerRef} className="relative w-full bg-[#0B1522] pt-20 sm:pt-24 lg:pt-20">
+    <section
+      id="inicio"
+      ref={containerRef}
+      className="relative w-full min-h-screen lg:min-h-[100dvh] bg-[#0B1522] pt-20 flex flex-col justify-between"
+    >
       {/* Main Hero Container with portrait and dark theme */}
-      <div className="relative min-h-[580px] sm:min-h-[620px] lg:min-h-[660px] xl:min-h-[700px] flex items-center overflow-hidden">
-        
+      <div className="relative flex-1 flex items-center overflow-hidden py-8 sm:py-12 lg:py-16">
+
         {/* Background Portrait of José Luis Zelada */}
-        <div className="absolute inset-y-0 right-0 w-full lg:w-[62%] xl:w-[58%] h-full pointer-events-none select-none z-0">
+        <div className="absolute inset-y-0 right-0 w-full lg:w-[58%] xl:w-[55%] 2xl:w-[52%] max-w-[920px] xl:max-w-[900px] h-full pointer-events-none select-none z-0 overflow-hidden">
           <Image
-            src="/images/Perfil.jpeg"
+            src="/images/perfilbueno.png"
             alt="José Luis Zelada - Consultor en Recursos Humanos y Gestión Organizacional"
             fill
             priority
             quality={95}
-            className="object-cover object-[center_18%] lg:object-[28%_16%]"
+            className="object-cover object-[center_2%] lg:object-[36%_2%]"
           />
           {/* Subtle warm lighting vignette */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B1522] via-[#0B1522]/95 via-35% md:via-[#0B1522]/75 md:via-25% lg:via-[#0B1522]/40 lg:via-20% to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B1522] via-[#0B1522]/90 via-22% md:via-[#0B1522]/55 md:via-15% lg:via-[#0B1522]/20 lg:via-10% to-transparent"></div>
           {/* Mobile darkened overlay so text is 100% legible */}
           <div className="absolute inset-0 bg-[#0B1522]/80 lg:hidden"></div>
           {/* Bottom subtle fade to merge into feature bar */}
@@ -60,7 +64,7 @@ export default function Hero() {
         </div>
 
         {/* Hero Content Container */}
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 relative z-10">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-6 items-center">
 
             {/* Left Column: Headlines & CTAs */}
@@ -115,7 +119,7 @@ export default function Hero() {
 
             {/* Right Column: Floating Quote Card on desktop / visible on tablet */}
             <div
-              className="lg:col-span-5 xl:col-span-5 flex justify-start lg:justify-end mt-4 lg:mt-0"
+              className="lg:col-span-5 xl:col-span-5 flex justify-start lg:justify-end mt-4 lg:mt-0 lg:translate-x-40 xl:translate-x-48 2xl:translate-x-56 lg:-translate-y-24 xl:-translate-y-28"
               style={{
                 animationName: isVisible ? 'fadeInUp' : 'none',
                 animationDuration: '0.8s',
@@ -125,15 +129,15 @@ export default function Hero() {
                 opacity: 0,
               }}
             >
-              <div className="bg-white rounded-xl shadow-2xl p-6 sm:p-7 max-w-xs sm:max-w-[320px] border border-gray-100 text-left transition-transform duration-300 hover:scale-[1.02]">
-                <p className="font-serif text-[#0F2440] text-lg sm:text-xl font-medium leading-snug">
+              <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-5 max-w-[220px] sm:max-w-[245px] lg:max-w-[255px] border border-gray-100 text-left transition-transform duration-300 hover:scale-[1.02]">
+                <p className="font-serif text-[#0F2440] text-sm sm:text-[15px] font-medium leading-snug">
                   “Organizaciones más humanas, eficientes y sostenibles son posibles.”
                 </p>
-                <div className="w-8 h-0.5 bg-brand-gold my-3.5"></div>
-                <p className="font-sans font-bold text-xs uppercase tracking-wider text-[#0F2440]">
+                <div className="w-6 h-[1.5px] bg-brand-gold my-2.5"></div>
+                <p className="font-sans font-bold text-[10px] sm:text-[11px] uppercase tracking-wider text-[#0F2440]">
                   JOSÉ LUIS ZELADA
                 </p>
-                <p className="font-sans text-[11px] text-gray-500 font-medium leading-tight mt-1">
+                <p className="font-sans text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5">
                   Consultor en Recursos Humanos y Gestión Organizacional
                 </p>
               </div>
@@ -144,10 +148,10 @@ export default function Hero() {
       </div>
 
       {/* Bottom 4-Column Feature / Value Proposition Bar */}
-      <div className="w-full bg-white border-t border-b border-gray-200/90 py-6 sm:py-7 relative z-20 shadow-sm">
+      <div className="w-full bg-white border-t border-b border-gray-200/90 py-5 sm:py-6 relative z-20 shadow-sm flex-shrink-0">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            
+
             {/* Feature 1 */}
             <div className="flex items-center gap-3.5">
               <div className="flex-shrink-0 text-brand-navy">
