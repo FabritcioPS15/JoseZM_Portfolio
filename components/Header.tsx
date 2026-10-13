@@ -12,8 +12,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Inicio', anchor: 'inicio' },
   { label: 'Servicios', anchor: 'servicios' },
   { label: 'Publicaciones', href: '/publicaciones' },
-  { label: 'Libros', href: '/publicaciones' },
-  { label: 'Contacto', anchor: 'contacto' },
+  { label: 'Contacto', href: '/contacto' },
 ]
 
 const HEADER_OFFSET = 80
@@ -47,13 +46,10 @@ export default function Header() {
       setIsScrolled(window.scrollY > 30)
       if (pathname !== '/') return
       const serviciosEl = document.getElementById('servicios') || document.getElementById('consultorías')
-      const contactoEl = document.getElementById('contacto')
 
       const scrollPos = window.scrollY + HEADER_OFFSET + 50
 
-      if (contactoEl && scrollPos >= contactoEl.offsetTop) {
-        setActiveAnchor('contacto')
-      } else if (serviciosEl && scrollPos >= serviciosEl.offsetTop) {
+      if (serviciosEl && scrollPos >= serviciosEl.offsetTop) {
         setActiveAnchor('servicios')
       } else {
         setActiveAnchor('inicio')
@@ -218,7 +214,7 @@ export default function Header() {
           </div>
 
           <div className="max-h-[calc(100dvh-9rem)] overflow-y-auto">
-            {NAV_ITEMS.map((item, idx) => {
+            {NAV_ITEMS.filter((item) => !('href' in item && item.href === '/contacto')).map((item, idx) => {
               const active = isActive(item)
               const inner = (
                 <>
@@ -257,13 +253,14 @@ export default function Header() {
             })}
           </div>
 
-          <a
-            href="mailto:contacto@joseluiszelada.pe"
+          <Link
+            href="/contacto"
+            onClick={() => setIsMobileMenuOpen(false)}
             className="flex items-center justify-center gap-2 px-5 py-4 bg-brand-navy text-white text-xs font-bold tracking-wider hover:bg-brand-navy/90 transition-colors duration-200"
           >
             <Mail size={14} className="text-brand-gold" />
-            CONTÁCTAME
-          </a>
+            Contacto
+          </Link>
         </nav>
       </div>
     </header>

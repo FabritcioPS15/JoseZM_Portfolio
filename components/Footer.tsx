@@ -92,12 +92,12 @@ export default function Footer() {
                 >
                   Libros
                 </Link>
-                <button
-                  onClick={() => scrollToAnchor('contacto')}
-                  className="text-left text-gray-600 hover:text-brand-gold transition-colors duration-200 cursor-pointer"
+                <Link
+                  href="/contacto"
+                  className="text-gray-600 hover:text-brand-gold transition-colors duration-200"
                 >
                   Contacto
-                </button>
+                </Link>
               </div>
             </div>
           </div>
