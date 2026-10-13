@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import LegalPage from '@/components/LegalPage'
 
 export const metadata: Metadata = {
-  title: 'Términos y Condiciones | José Luis Zelada',
+  title: 'Términos y Condiciones',
   description:
     'Términos y condiciones de uso del sitio web de José Luis Zelada, consultor en gestión del talento humano.',
+  alternates: { canonical: '/terminos-y-condiciones' },
+  robots: { index: true, follow: true },
 }
 
 export default function TerminosYCondicionesPage() {

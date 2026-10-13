@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
 import Services from '@/components/Services'
@@ -9,6 +10,10 @@ import ScrollToTop from '@/components/ScrollToTop'
 
 // Revalida cada 60s y se refresca al instante al guardar desde el editor (/api/sections)
 export const revalidate = 60
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 export default function Page() {
   return (

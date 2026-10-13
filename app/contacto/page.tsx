@@ -5,12 +5,27 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 import PageBanner from '@/components/PageBanner'
+import { absoluteUrl } from '@/lib/seo'
 import { Mail, MessageCircle, ArrowRight } from 'lucide-react'
 
+const DESCRIPTION =
+  'Ponte en contacto con José Luis Zelada, consultor en gestión del talento humano y desarrollo organizacional. Correo, WhatsApp y LinkedIn.'
+
 export const metadata: Metadata = {
-  title: 'Contacto | José Luis Zelada',
-  description:
-    'Ponte en contacto con José Luis Zelada, consultor en gestión del talento humano y desarrollo organizacional. Correo, WhatsApp y LinkedIn.',
+  title: 'Contacto',
+  description: DESCRIPTION,
+  alternates: { canonical: '/contacto' },
+  openGraph: {
+    type: 'website',
+    title: 'Contacto | José Luis Zelada',
+    description: DESCRIPTION,
+    url: absoluteUrl('/contacto'),
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contacto | José Luis Zelada',
+    description: DESCRIPTION,
+  },
 }
 
 const EMAIL = 'contacto@joseluiszelada.pe'

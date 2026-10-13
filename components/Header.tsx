@@ -10,7 +10,7 @@ type NavItem = { label: string; href: string } | { label: string; anchor: string
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Inicio', anchor: 'inicio' },
-  { label: 'Servicios', anchor: 'servicios' },
+  { label: 'Servicios', href: '/servicios' },
   { label: 'Publicaciones', href: '/publicaciones' },
   { label: 'Contacto', href: '/contacto' },
 ]
@@ -44,22 +44,12 @@ export default function Header() {
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 30)
-      if (pathname !== '/') return
-      const serviciosEl = document.getElementById('servicios') || document.getElementById('consultorías')
-
-      const scrollPos = window.scrollY + HEADER_OFFSET + 50
-
-      if (serviciosEl && scrollPos >= serviciosEl.offsetTop) {
-        setActiveAnchor('servicios')
-      } else {
-        setActiveAnchor('inicio')
-      }
     }
 
     handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [pathname])
+  }, [])
 
   useEffect(() => {
     if (!isHome) return

@@ -103,7 +103,9 @@ export default function Hero() {
 
               {/* Description Paragraph */}
               <p className="text-gray-300 text-sm sm:text-base md:text-[16px] lg:text-[17px] font-sans leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
-                Ayudo a las empresas a fortalecer su talento humano, optimizar sus procesos y desarrollar modelos de gestión orientados a resultados, productividad y crecimiento sostenible.
+                Soy José Luis Zelada Minaya y ayudo a las empresas a fortalecer su talento humano,
+                optimizar sus procesos y desarrollar modelos de gestión orientados a resultados,
+                productividad y crecimiento sostenible.
               </p>
 
               {/* Action Buttons */}

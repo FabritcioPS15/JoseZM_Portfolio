@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { Users, Cog, BarChart3, Leaf, ArrowRight } from 'lucide-react'
 
 interface ServiceItem {
@@ -106,13 +107,13 @@ export default function Services() {
             </h2>
           </div>
 
-          <button
-            onClick={scrollToContact}
-            className="self-start md:self-end flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-brand-navy hover:text-brand-gold transition-colors duration-200 group pb-1 whitespace-nowrap cursor-pointer"
+          <Link
+            href="/servicios"
+            className="self-start md:self-end flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-brand-navy hover:text-brand-gold transition-colors duration-200 group pb-1 whitespace-nowrap"
           >
             <span>Ver todos los servicios</span>
             <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform duration-200" />
-          </button>
+          </Link>
         </div>
 
         {/* 4 Services Grid */}

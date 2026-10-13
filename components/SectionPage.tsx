@@ -3,7 +3,9 @@ import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 import PublicacionesList from '@/components/PublicacionesList'
 import Reveal from '@/components/Reveal'
-import { getSections } from '@/lib/sections'
+import JsonLd from '@/components/JsonLd'
+import { getSections, itemHref } from '@/lib/sections'
+import { collectionSchema, breadcrumbSchema } from '@/lib/seo'
 
 export default async function SectionPage({
   sectionLink,
@@ -19,9 +21,26 @@ export default async function SectionPage({
   const sections = await getSections()
   const section = sections.find((s) => s.link === sectionLink) ?? null
   const count = section ? section.items.length : 0
+  const items = section
+    ? section.items.map((item) => ({ name: item.title, path: itemHref(item, section) }))
+    : []
 
   return (
     <main className="min-h-screen bg-white">
+      <JsonLd
+        data={[
+          collectionSchema({
+            name: `${title} de José Luis Zelada`,
+            description,
+            path: sectionLink,
+            items,
+          }),
+          breadcrumbSchema([
+            { name: 'Inicio', path: '/' },
+            { name: title, path: sectionLink },
+          ]),
+        ]}
+      />
       <Header />
 
       {/* Hero */}

@@ -3,6 +3,16 @@ import type { Metadata, Viewport } from 'next'
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google'
 import ScrollToTopOnNavigate from '@/components/ScrollToTopOnNavigate'
 import LogoLoader from '@/components/LogoLoader'
+import JsonLd from '@/components/JsonLd'
+import {
+  SITE_URL,
+  SITE_NAME,
+  SITE_DESCRIPTION,
+  NAME_VARIANTS,
+  personSchema,
+  organizationSchema,
+  websiteSchema,
+} from '@/lib/seo'
 import './globals.css'
 
 const cormorantGaramond = Cormorant_Garamond({
@@ -18,34 +28,42 @@ const dmSans = DM_Sans({
   weight: 'variable',
 })
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://joseluiszelada.pe'
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'José Luis Zelada | Consultor en Gestión del Talento Humano',
-  description: 'Consultor especializado en gestión del talento humano, desarrollo organizacional y consultoría estratégica. Acompaño a personas y organizaciones hacia el éxito.',
-  keywords: ['Gestión del Talento Humano', 'Liderazgo', 'Recursos Humanos', 'Consultoría', 'José Luis Zelada', 'Desarrollo Organizacional'],
-  authors: [{ name: 'José Luis Zelada' }],
-  creator: 'José Luis Zelada',
+  title: {
+    default: 'José Luis Zelada | Consultor en Gestión del Talento Humano',
+    template: '%s | José Luis Zelada',
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    ...NAME_VARIANTS,
+    'Gestión del Talento Humano',
+    'Liderazgo',
+    'Recursos Humanos',
+    'Consultoría',
+    'Desarrollo Organizacional',
+    'Consultor en Gestión Humana Perú',
+  ],
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: 'Consultoría',
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
   openGraph: {
     type: 'website',
     locale: 'es_PE',
     url: SITE_URL,
     title: 'José Luis Zelada | Consultor en Gestión del Talento Humano',
-    description: 'Consultor especializado en gestión del talento humano y desarrollo organizacional. Acompaño a personas y organizaciones hacia el éxito.',
-    siteName: 'José Luis Zelada',
-    images: [{
-      url: '/og-image.jpg',
-      width: 1200,
-      height: 630,
-      alt: 'José Luis Zelada',
-    }],
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
   },
   twitter: {
     card: 'summary_large_image',
     title: 'José Luis Zelada | Consultor en Gestión del Talento Humano',
-    description: 'Consultor especializado en gestión del talento humano, desarrollo organizacional y consultoría estratégica.',
-    images: ['/og-image.jpg'],
+    description: SITE_DESCRIPTION,
   },
   robots: {
     index: true,
@@ -64,10 +82,25 @@ export const metadata: Metadata = {
       { url: '/favicon/favicon.ico' },
       { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
+      { url: '/favicon/android-icon-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
-    apple: '/favicon/apple-icon.png',
+    shortcut: '/favicon/favicon.ico',
+    apple: [
+      { url: '/favicon/apple-icon-180x180.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
   manifest: '/favicon/manifest.json',
+  appleWebApp: {
+    capable: true,
+    title: SITE_NAME,
+    statusBarStyle: 'default',
+  },
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
 }
 
 export const viewport: Viewport = {
@@ -85,6 +118,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`light ${cormorantGaramond.variable} ${dmSans.variable}`}>
       <body className="antialiased font-sans bg-white text-foreground">
+        <JsonLd data={[websiteSchema(), personSchema(), organizationSchema()]} />
         <LogoLoader />
         <ScrollToTopOnNavigate />
         {children}

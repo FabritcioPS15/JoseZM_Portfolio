@@ -2,9 +2,11 @@ import type { Metadata } from 'next'
 import LegalPage from '@/components/LegalPage'
 
 export const metadata: Metadata = {
-  title: 'Política de Privacidad | José Luis Zelada',
+  title: 'Política de Privacidad',
   description:
     'Política de privacidad del sitio web de José Luis Zelada, consultor en gestión del talento humano. Conoce qué datos recopilamos y cómo los utilizamos.',
+  alternates: { canonical: '/politica-de-privacidad' },
+  robots: { index: true, follow: true },
 }
 
 export default function PoliticaDePrivacidadPage() {

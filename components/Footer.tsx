@@ -54,7 +54,8 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-gray-600 max-w-sm mt-3.5 leading-relaxed font-normal">
-              Contribuyo al desarrollo de organizaciones más humanas, eficientes y sostenibles.
+              José Luis Zelada Minaya — consultor en gestión del talento humano. Contribuyo al
+              desarrollo de organizaciones más humanas, eficientes y sostenibles.
             </p>
           </div>
 
@@ -71,12 +72,12 @@ export default function Footer() {
                 >
                   Inicio
                 </button>
-                <button
-                  onClick={() => scrollToAnchor('servicios')}
-                  className="text-left text-gray-600 hover:text-brand-gold transition-colors duration-200 cursor-pointer"
+                <Link
+                  href="/servicios"
+                  className="text-left text-gray-600 hover:text-brand-gold transition-colors duration-200"
                 >
                   Servicios
-                </button>
+                </Link>
               </div>
 
               <div className="flex flex-col space-y-2.5">

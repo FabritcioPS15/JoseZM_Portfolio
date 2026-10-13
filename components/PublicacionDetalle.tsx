@@ -12,8 +12,10 @@ import {
 import BookCover from './BookCover'
 import RelatedGrid from './RelatedGrid'
 import RelatedModal from './RelatedModal'
+import JsonLd from './JsonLd'
 import { readingTime } from '@/lib/readingTime'
-import { type Section, type SectionItem } from '@/lib/sections'
+import { type Section, type SectionItem, itemHref } from '@/lib/sections'
+import { contentSchema, breadcrumbSchema } from '@/lib/seo'
 
 const CONTACT_MAIL = 'mailto:contacto@joseluiszelada.pe'
 
@@ -405,9 +407,25 @@ export default function PublicacionDetalle({
   section: Section
   related?: SectionItem[]
 }) {
-  return section.type === 'book' ? (
-    <BookLayout item={item} section={section} related={related} />
-  ) : (
-    <ArticleLayout item={item} section={section} related={related} />
+  const sectionPath = section.link || '/publicaciones'
+
+  return (
+    <>
+      <JsonLd
+        data={[
+          contentSchema({ item, section }),
+          breadcrumbSchema([
+            { name: 'Inicio', path: '/' },
+            { name: section.title, path: sectionPath },
+            { name: item.title, path: itemHref(item, section) },
+          ]),
+        ]}
+      />
+      {section.type === 'book' ? (
+        <BookLayout item={item} section={section} related={related} />
+      ) : (
+        <ArticleLayout item={item} section={section} related={related} />
+      )}
+    </>
   )
 }
