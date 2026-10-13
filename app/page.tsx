@@ -1,8 +1,9 @@
 import Header from '@/components/Header'
 import Hero from '@/components/Hero'
-import Stats from '@/components/Stats'
 import Services from '@/components/Services'
 import Featured from '@/components/Featured'
+import Stats from '@/components/Stats'
+import ConsultingCta from '@/components/ConsultingCta'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 
@@ -14,9 +15,10 @@ export default function Page() {
     <main className="min-h-screen bg-white">
       <Header />
       <Hero />
-      <Stats />
       <Services />
       <Featured />
+      <Stats />
+      <ConsultingCta />
       <Footer />
       <ScrollToTop />
     </main>

@@ -1,26 +1,59 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Users, TrendingUp, Target } from 'lucide-react'
+import { Users, Cog, BarChart3, Leaf, ArrowRight } from 'lucide-react'
 
-const services = [
+interface ServiceItem {
+  id: string
+  icon: typeof Users
+  title: string
+  description: string
+  cardBg: string
+  borderColor: string
+  circleBorder: string
+  iconColor: string
+}
+
+const SERVICES_DATA: ServiceItem[] = [
   {
+    id: 'talento-humano',
     icon: Users,
     title: 'Gestión del Talento Humano',
-    description:
-      'Diseño e implemento estrategias para atraer, desarrollar y retener el talento que impulsa los resultados.',
+    description: 'Atracción, desarrollo, retención y evaluación del talento.',
+    cardBg: 'bg-[#FAF6EE]',
+    borderColor: 'border-[#F2E8D7]',
+    circleBorder: 'border-[#EADBBE]',
+    iconColor: 'text-[#A27228]',
   },
   {
-    icon: TrendingUp,
+    id: 'optimizacion-procesos',
+    icon: Cog,
+    title: 'Optimización y Sistematización de Procesos',
+    description: 'Procesos más eficientes y orientados a resultados.',
+    cardBg: 'bg-[#F0F5FA]',
+    borderColor: 'border-[#DFEAF4]',
+    circleBorder: 'border-[#D2E2F0]',
+    iconColor: 'text-[#163860]',
+  },
+  {
+    id: 'gestion-estrategica',
+    icon: BarChart3,
+    title: 'Gestión Estratégica e Indicadores',
+    description: 'Información para tomar mejores decisiones.',
+    cardBg: 'bg-[#F2F7F2]',
+    borderColor: 'border-[#E0EEE0]',
+    circleBorder: 'border-[#D0E6D0]',
+    iconColor: 'text-[#2D6E3F]',
+  },
+  {
+    id: 'desarrollo-organizacional',
+    icon: Leaf,
     title: 'Desarrollo Organizacional',
-    description:
-      'Fortalezco la cultura, los procesos y la estructura organizacional para lograr equipos más ágiles y efectivos.',
-  },
-  {
-    icon: Target,
-    title: 'Consultoría Estratégica',
-    description:
-      'Acompaño a líderes y organizaciones en la toma de decisiones y en la ejecución de estrategias de alto impacto.',
+    description: 'Cultura, liderazgo y gestión del cambio.',
+    cardBg: 'bg-[#FAF7F2]',
+    borderColor: 'border-[#EFE7DC]',
+    circleBorder: 'border-[#E6DEC8]',
+    iconColor: 'text-[#2C5734]',
   },
 ]
 
@@ -48,67 +81,94 @@ export default function Services() {
     return () => observer.disconnect()
   }, [isVisible])
 
+  const scrollToContact = () => {
+    const el = document.getElementById('contacto')
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+
   return (
-    <section id="consultorías" className="relative py-16 md:py-24 bg-white overflow-hidden">
-      {/* Top accent line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold to-transparent opacity-30"></div>
-      
+    <section id="servicios" className="relative py-14 sm:py-16 lg:py-20 bg-white overflow-hidden">
+      {/* Anchor helper for backward compatibility */}
+      <div id="consultorías" className="absolute -top-20" aria-hidden="true"></div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <p className="text-brand-gold text-xs md:text-sm font-bold mb-3 uppercase tracking-[0.2em] flex items-center justify-center gap-3 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            <span className="w-8 h-px bg-brand-gold"></span>
-            LO QUE HAGO
-            <span className="w-8 h-px bg-brand-gold"></span>
-          </p>
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-navy mb-4 text-balance animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Acompaño a personas y organizaciones
-          </h2>
-          <p className="text-sm md:text-base text-gray-500 max-w-3xl mx-auto leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            Brindo consultoría especializada y soluciones estratégicas para impulsar el talento humano, la productividad y el desarrollo organizacional sostenible.
-          </p>
+        
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 sm:mb-12">
+          <div>
+            <p className="text-brand-gold font-sans font-bold text-xs sm:text-[13px] tracking-[0.18em] uppercase mb-2">
+              MIS SERVICIOS
+            </p>
+            <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-serif font-bold text-brand-navy leading-tight text-balance">
+              Soluciones para una gestión organizacional efectiva
+            </h2>
+          </div>
+
+          <button
+            onClick={scrollToContact}
+            className="self-start md:self-end flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-brand-navy hover:text-brand-gold transition-colors duration-200 group pb-1 whitespace-nowrap cursor-pointer"
+          >
+            <span>Ver todos los servicios</span>
+            <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform duration-200" />
+          </button>
         </div>
 
-        {/* Services Grid */}
+        {/* 4 Services Grid */}
         <div
           ref={containerRef}
-          className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6"
         >
-          {services.map((service, index) => {
+          {SERVICES_DATA.map((service, index) => {
             const Icon = service.icon
             return (
               <div
-                key={index}
-                className="group flex gap-4 p-5 md:p-6 rounded-xl bg-white border border-gray-100 transition-all duration-300 hover:shadow-lg"
+                key={service.id}
+                className={`group rounded-2xl p-6 sm:p-7 border ${service.borderColor} ${service.cardBg} flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
                 style={{
                   animationName: isVisible ? 'fadeInUp' : 'none',
                   animationDuration: '0.6s',
                   animationTimingFunction: 'ease-out',
                   animationFillMode: 'forwards',
-                  animationDelay: `${0.2 + index * 0.1}s`,
+                  animationDelay: `${0.1 + index * 0.1}s`,
                   opacity: 0,
                 }}
               >
-                {/* Icon Column (left) */}
-                <div className="flex-shrink-0">
-                  <div className="w-14 h-14 bg-[#FDF3E3] rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-105">
-                    <Icon size={24} className="text-brand-gold" />
+                {/* Card Top: Icon & Title */}
+                <div>
+                  <div className="flex items-center gap-3.5 mb-3.5">
+                    <div
+                      className={`w-12 h-12 rounded-full bg-white shadow-xs border ${service.circleBorder} flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105`}
+                    >
+                      <Icon size={22} className={service.iconColor} strokeWidth={2.2} />
+                    </div>
+                    <h3 className="font-serif font-bold text-base sm:text-[17px] text-brand-navy leading-snug">
+                      {service.title}
+                    </h3>
                   </div>
-                </div>
-                
-                {/* Content Column (right) */}
-                <div className="flex-grow pt-1">
-                  <h3 className="text-lg font-serif font-bold text-brand-navy mb-2">
-                    {service.title}
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+
+                  {/* Card Description */}
+                  <p className="text-xs sm:text-[13px] text-gray-600 font-sans leading-relaxed mt-4 font-normal">
                     {service.description}
                   </p>
+                </div>
+
+                {/* Card Action Link */}
+                <div className="pt-6 mt-auto">
+                  <button
+                    onClick={scrollToContact}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-brand-navy group-hover:text-brand-gold underline underline-offset-4 decoration-gray-300 group-hover:decoration-brand-gold transition-all duration-200 cursor-pointer"
+                  >
+                    <span>Conoce más</span>
+                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+                  </button>
                 </div>
               </div>
             )
           })}
         </div>
+
       </div>
     </section>
   )

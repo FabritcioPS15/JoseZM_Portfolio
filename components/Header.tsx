@@ -4,16 +4,17 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, X, ArrowRight, Mail } from 'lucide-react'
+import { Menu, X, ArrowRight, Mail, Search } from 'lucide-react'
 
 type NavItem = { label: string; href: string } | { label: string; anchor: string }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'INICIO', anchor: 'top' },
-  { label: 'SOBRE MÍ', anchor: 'trayectoria' },
-  { label: 'INVESTIGACIONES', href: '/investigaciones' },
-  { label: 'ARTÍCULOS', href: '/articulos' },
-  { label: 'PUBLICACIONES', href: '/publicaciones' },
+  { label: 'Inicio', anchor: 'inicio' },
+  { label: 'Sobre mí', anchor: 'trayectoria' },
+  { label: 'Servicios', anchor: 'servicios' },
+  { label: 'Publicaciones', href: '/publicaciones' },
+  { label: 'Libros', href: '/publicaciones' },
+  { label: 'Contacto', anchor: 'contacto' },
 ]
 
 const HEADER_OFFSET = 80
@@ -21,7 +22,7 @@ const HEADER_OFFSET = 80
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [activeAnchor, setActiveAnchor] = useState('top')
+  const [activeAnchor, setActiveAnchor] = useState('inicio')
   const pathname = usePathname()
   const router = useRouter()
   const isHome = pathname === '/'
@@ -32,7 +33,7 @@ export default function Header() {
       : isHome && activeAnchor === item.anchor
 
   const scrollToAnchor = (anchor: string) => {
-    if (anchor === 'top') {
+    if (anchor === 'inicio' || anchor === 'top') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
@@ -44,13 +45,23 @@ export default function Header() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      setIsScrolled(window.scrollY > 30)
       if (pathname !== '/') return
-      const section = document.getElementById('trayectoria')
-      const overSection = section
-        ? window.scrollY >= section.offsetTop - HEADER_OFFSET
-        : false
-      setActiveAnchor(overSection ? 'trayectoria' : 'top')
+      const trayectoriaEl = document.getElementById('trayectoria')
+      const serviciosEl = document.getElementById('servicios') || document.getElementById('consultorías')
+      const contactoEl = document.getElementById('contacto')
+
+      const scrollPos = window.scrollY + HEADER_OFFSET + 50
+
+      if (contactoEl && scrollPos >= contactoEl.offsetTop) {
+        setActiveAnchor('contacto')
+      } else if (trayectoriaEl && scrollPos >= trayectoriaEl.offsetTop) {
+        setActiveAnchor('trayectoria')
+      } else if (serviciosEl && scrollPos >= serviciosEl.offsetTop) {
+        setActiveAnchor('servicios')
+      } else {
+        setActiveAnchor('inicio')
+      }
     }
 
     handleScroll()
@@ -91,73 +102,92 @@ export default function Header() {
       window.history.replaceState(
         null,
         '',
-        anchor === 'top' ? window.location.pathname : `#${anchor}`
+        anchor === 'inicio' ? window.location.pathname : `#${anchor}`
       )
       scrollToAnchor(anchor)
     } else {
-      router.push(anchor === 'top' ? '/' : `/#${anchor}`)
+      router.push(anchor === 'inicio' ? '/' : `/#${anchor}`)
     }
   }
 
   return (
     <header
-      className={`fixed w-full top-0 z-50 transition-all duration-300 backdrop-blur-md ${isScrolled ? 'bg-white/95 shadow-lg' : 'bg-white'
-        }`}
+      className={`fixed w-full top-0 z-50 transition-all duration-300 backdrop-blur-md ${
+        isScrolled ? 'bg-white/95 shadow-md py-1.5' : 'bg-white py-2'
+      }`}
     >
-      {/* Top gradient line */}
-      <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold to-transparent transition-opacity duration-300 ${isScrolled ? 'opacity-100' : 'opacity-0'
-        }`}></div>
+      {/* Top subtle border */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-100"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-            <Image src="/images/LogoJLZ.png" alt="Logo" width={150} height={40} className="h-10 w-auto transition-transform duration-300 group-hover:scale-105" priority />
-            <div className="h-6 sm:h-8 w-px bg-brand-gold opacity-70"></div>
-            <div className="transition-all duration-300">
-              <p className="sm:hidden text-brand-navy font-serif font-bold text-xl tracking-wider leading-tight group-hover:text-brand-gold transition-colors duration-300 whitespace-nowrap">
-                JZ
-              </p>
-              <p className="hidden sm:block text-brand-navy font-sans font-bold text-sm tracking-wider leading-tight group-hover:text-brand-gold transition-colors duration-300 whitespace-nowrap">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          {/* Logo with Logotipo.png and titles */}
+          <Link href="/" className="flex items-center gap-3 sm:gap-3.5 flex-shrink-0 group">
+            <div className="relative w-11 h-11 sm:w-12 sm:h-12 flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+              <Image
+                src="/images/Logotipo.png"
+                alt="José Luis Zelada"
+                fill
+                priority
+                className="object-contain"
+              />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-brand-navy font-bold text-xs sm:text-sm tracking-wider leading-tight group-hover:text-brand-gold transition-colors font-sans uppercase">
                 JOSÉ LUIS ZELADA
-              </p>
+              </span>
+              <span className="text-[10px] sm:text-[11px] text-gray-500 font-medium tracking-tight leading-tight mt-0.5">
+                Especialista en Recursos Humanos y Gestión Organizacional
+              </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-5">
-            {NAV_ITEMS.map((item) => {
-              const active = isActive(item)
-              const itemClassName = `text-[13px] font-semibold tracking-wider transition-all duration-300 relative pb-2 ${
-                active ? 'text-brand-navy' : 'text-brand-navy hover:text-brand-gold'
-              } group`
-              const underline = active ? (
-                <span className="absolute bottom-0 left-1/4 w-1/2 h-0.5 bg-brand-gold transition-all duration-300"></span>
-              ) : (
-                <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-brand-gold group-hover:w-1/2 group-hover:left-1/4 transition-all duration-300"></span>
-              )
-              return 'href' in item ? (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  aria-current={active ? 'page' : undefined}
-                  className={itemClassName}
-                >
-                  {item.label}
-                  {underline}
-                </Link>
-              ) : (
-                <button
-                  key={item.label}
-                  onClick={() => handleNavClick(item.anchor)}
-                  className={itemClassName}
-                >
-                  {item.label}
-                  {underline}
-                </button>
-              )
-            })}
-          </nav>
+          <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+            <nav className="flex items-center gap-6 xl:gap-7">
+              {NAV_ITEMS.map((item) => {
+                const active = isActive(item)
+                const itemClassName = `text-[14px] font-medium tracking-normal transition-all duration-200 relative pb-1 ${
+                  active ? 'text-brand-navy font-semibold' : 'text-gray-700 hover:text-brand-gold'
+                }`
+                const underline = active ? (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-gold transition-all duration-300"></span>
+                ) : (
+                  <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-brand-gold group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
+                )
+                return 'href' in item ? (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    aria-current={active ? 'page' : undefined}
+                    className={`${itemClassName} group`}
+                  >
+                    {item.label}
+                    {underline}
+                  </Link>
+                ) : (
+                  <button
+                    key={item.label}
+                    onClick={() => handleNavClick(item.anchor)}
+                    className={`${itemClassName} group`}
+                  >
+                    {item.label}
+                    {underline}
+                  </button>
+                )
+              })}
+            </nav>
+
+            {/* Search icon */}
+            <button
+              onClick={() => router.push('/publicaciones')}
+              aria-label="Buscar publicaciones"
+              title="Buscar"
+              className="p-2 text-gray-700 hover:text-brand-gold hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              <Search size={19} strokeWidth={2.2} />
+            </button>
+          </div>
 
           {/* Mobile Menu Button */}
           <button
@@ -188,8 +218,9 @@ export default function Header() {
         <nav className="rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-cream/60 to-transparent">
             <p className="text-[11px] font-bold tracking-[0.2em] text-brand-navy/60 uppercase">Menú</p>
-            <span className="h-px flex-1 mx-4 bg-brand-gold/30"></span>
-            <span className="text-[11px] font-bold text-brand-gold">JZ</span>
+            <div className="relative w-6 h-6 flex-shrink-0">
+              <Image src="/images/Logotipo.png" alt="Logo" fill className="object-contain" />
+            </div>
           </div>
 
           <div className="max-h-[calc(100dvh-9rem)] overflow-y-auto">

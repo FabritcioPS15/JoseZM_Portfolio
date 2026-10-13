@@ -331,11 +331,11 @@
 
 /* Máscara del logo (loader): usa el SVG como forma para poder "rellenarlo". */
 .logo-mask {
-  -webkit-mask-image: url('/images/JLZlogo.svg');
+  -webkit-mask-image: url('/images/Logotipo.png');
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
-  mask-image: url('/images/JLZlogo.svg');
+  mask-image: url('/images/Logotipo.png');
   mask-repeat: no-repeat;
   mask-position: center;
   mask-size: contain;
