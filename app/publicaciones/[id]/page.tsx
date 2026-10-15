@@ -5,6 +5,12 @@ import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 import PublicacionDetalle from '@/components/PublicacionDetalle'
 import { getSections, itemHref, type Section, type SectionItem } from '@/lib/sections'
+import {
+  getPublicacionById,
+  getDefaultPublicacionesSection,
+  asSectionItem,
+  TODAS_LAS_PUBLICACIONES,
+} from '@/lib/publicacionesData'
 import { absoluteUrl } from '@/lib/seo'
 
 type Props = { params: Promise<{ id: string }> }
@@ -13,9 +19,13 @@ export const revalidate = 60
 
 export async function generateStaticParams() {
   const sections = await getSections()
-  return sections
+  const sectionIds = sections
     .filter((section) => (section.link || '/publicaciones').replace(/\/+$/, '') === '/publicaciones')
     .flatMap((section) => section.items.map((item) => ({ id: item.id })))
+
+  const defaultIds = TODAS_LAS_PUBLICACIONES.map((p) => ({ id: p.id }))
+  const allIds = Array.from(new Set([...sectionIds.map((s) => s.id), ...defaultIds.map((d) => d.id)]))
+  return allIds.map((id) => ({ id }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -54,6 +64,14 @@ async function findItem(id: string): Promise<{ item: SectionItem; section: Secti
     const item = section.items.find((it) => it.id === id)
     if (item) return { item, section }
   }
+
+  // Fallback a las publicaciones principales de publicacionesData
+  const fallbackPub = getPublicacionById(id)
+  if (fallbackPub) {
+    const fallbackSection = getDefaultPublicacionesSection()
+    return { item: asSectionItem(fallbackPub), section: fallbackSection }
+  }
+
   return null
 }
 

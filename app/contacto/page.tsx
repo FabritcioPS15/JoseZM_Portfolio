@@ -60,15 +60,15 @@ function ChannelCard({
       href={href}
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
-      className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-gold/40 transition-all duration-300 p-6 flex flex-col"
+      className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-gold/40 hover:-translate-y-1 transition-all duration-300 p-6 flex flex-col h-full"
     >
       <div className="w-12 h-12 rounded-xl bg-cream flex items-center justify-center mb-4 text-brand-gold transition-colors group-hover:bg-brand-gold/15">
         {icon}
       </div>
       <p className="text-[11px] font-bold uppercase tracking-wider text-brand-navy/60">{label}</p>
-      <p className="font-semibold text-brand-navy mt-1 break-all">{value}</p>
-      <p className="text-xs text-gray-500 leading-relaxed mt-2 flex-grow">{description}</p>
-      <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand-navy group-hover:text-brand-gold mt-4 transition-colors">
+      <p className="font-semibold text-brand-navy mt-1 break-words">{value}</p>
+      <p className="text-sm text-gray-500 leading-relaxed mt-2 flex-grow">{description}</p>
+      <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand-navy group-hover:text-brand-gold mt-4 pt-4 border-t border-gray-100 transition-colors">
         Contactar
         <ArrowRight size={13} className="transition-transform group-hover:translate-x-0.5" />
       </span>
@@ -89,9 +89,23 @@ export default function ContactoPage() {
       />
 
       {/* Channels */}
-      <section className="relative pb-16 md:pb-24 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <section className="relative bg-white py-14 sm:py-16 lg:py-20 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Section header */}
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14">
+            <p className="text-brand-gold font-sans font-bold text-xs sm:text-[13px] tracking-[0.18em] uppercase mb-2">
+              CANALES DE CONTACTO
+            </p>
+            <h2 className="text-xl sm:text-2xl lg:text-[30px] font-serif font-bold text-brand-navy leading-snug mb-3">
+              Elige el canal que prefieras
+            </h2>
+            <p className="text-gray-500 text-sm sm:text-[15px] font-sans leading-relaxed font-normal">
+              Estoy disponible para conversar sobre tus proyectos, resolver dudas o conocer
+              tus necesidades. Te responderé a la brevedad posible.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
             <ChannelCard
               href={`mailto:${EMAIL}`}
               icon={<Mail size={22} />}

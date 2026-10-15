@@ -121,7 +121,7 @@ export default function PublicacionesList({ sections }: { sections: Section[] })
     <div ref={containerRef} className="space-y-16">
       {/* Toolbar: búsqueda + filtros en una sola fila */}
       <div
-        className="sticky top-20 z-30 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm p-3 md:p-4 space-y-3"
+        className="sticky top-18 sm:top-20 z-30 bg-white/90 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm p-3 md:p-4 space-y-3"
         style={entrance()}
       >
         <div className="flex flex-wrap items-center gap-2.5 md:gap-3">

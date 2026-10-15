@@ -341,6 +341,39 @@
   mask-size: contain;
 }
 
+/* ---- Loader: spinner de dos arcos girando con el logo al centro ---- */
+@keyframes loader-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.loader-rings {
+  display: grid;
+  width: var(--loader-size, 7rem);
+  height: var(--loader-size, 7rem);
+  animation: loader-spin 4s infinite;
+}
+
+.loader-rings::before,
+.loader-rings::after {
+  content: '';
+  grid-area: 1 / 1;
+  border: var(--loader-thickness, 7px) solid;
+  border-radius: 50%;
+  mix-blend-mode: darken;
+  animation: loader-spin 1s infinite linear;
+}
+
+.loader-rings::before {
+  border-color: #c9a35c #c9a35c transparent transparent;
+}
+
+.loader-rings::after {
+  border-color: transparent transparent #0f2440 #0f2440;
+  animation-direction: reverse;
+}
+
 /* ---- Portada de libro en 3D (vista desde un lado) ---- */
 .book3d-scene {
   perspective: 1100px;

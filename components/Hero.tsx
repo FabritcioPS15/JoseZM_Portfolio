@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { ArrowRight, Users, Cog, Lightbulb, Target } from 'lucide-react'
 
 const FEATURES = [
@@ -34,15 +35,6 @@ export default function Hero() {
 
     return () => observer.disconnect()
   }, [isVisible])
-
-  const scrollToSection = (id: string) => {
-    const el = document.getElementById(id)
-    if (el) {
-      const offset = 80
-      const top = el.getBoundingClientRect().top + window.scrollY - offset
-      window.scrollTo({ top, behavior: 'smooth' })
-    }
-  }
 
   return (
     <section
@@ -110,19 +102,19 @@ export default function Hero() {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 sm:pt-4">
-                <button
-                  onClick={() => scrollToSection('servicios')}
+                <Link
+                  href="/servicios"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-brand-gold hover:bg-[#b8924b] text-[#0B1522] font-sans font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-[4px] shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group cursor-pointer"
                 >
                   <span>Conoce mis servicios</span>
                   <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-                </button>
+                </Link>
               </div>
             </div>
 
             {/* Right Column: Floating Quote Card (desktop only) */}
             <div
-              className="hidden lg:col-span-5 xl:col-span-5 lg:flex lg:justify-end lg:translate-x-40 xl:translate-x-48 2xl:translate-x-56 lg:-translate-y-24 xl:-translate-y-28"
+              className="hidden lg:col-span-5 xl:col-span-5 lg:flex lg:justify-end lg:translate-x-0 xl:translate-x-4 2xl:translate-x-12 lg:-translate-y-24 xl:-translate-y-28"
               style={{
                 animationName: isVisible ? 'fadeInUp' : 'none',
                 animationDuration: '0.8s',
@@ -132,7 +124,7 @@ export default function Hero() {
                 opacity: 0,
               }}
             >
-              <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-5 max-w-[220px] sm:max-w-[245px] lg:max-w-[255px] border border-gray-100 text-left transition-transform duration-300 hover:scale-[1.02]">
+              <div className="bg-white rounded-xl shadow-2xl p-3 sm:p-4 max-w-[195px] sm:max-w-[215px] lg:max-w-[225px] border border-gray-100 text-left transition-transform duration-300 hover:scale-[1.02]">
                 <p className="font-serif text-[#0F2440] text-sm sm:text-[15px] font-medium leading-snug">
                   “Gestión que conecta personas, procesos y resultados”
                 </p>

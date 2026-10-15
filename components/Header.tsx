@@ -101,10 +101,10 @@ export default function Header() {
       <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-100"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo with Logotipo.png and titles */}
           <Link href="/" className="flex items-center gap-3 sm:gap-3.5 flex-shrink-0 group">
-            <div className="relative w-11 h-11 sm:w-12 sm:h-12 flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
+            <div className="relative w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 transition-transform duration-300 group-hover:scale-105">
               <Image
                 src="/images/Logotipo.png"
                 alt="José Luis Zelada"
@@ -186,13 +186,13 @@ export default function Header() {
       <div
         onClick={() => setIsMobileMenuOpen(false)}
         aria-hidden="true"
-        className={`fixed inset-0 top-20 bg-brand-navy/40 backdrop-blur-sm lg:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        className={`fixed inset-0 top-18 sm:top-20 bg-brand-navy/40 backdrop-blur-sm lg:hidden transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
           }`}
       ></div>
 
       {/* Mobile Navigation Panel */}
       <div
-        className={`lg:hidden fixed inset-x-0 top-20 z-40 px-4 pt-2 transition-all duration-300 ease-out ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-3 pointer-events-none opacity-0'
+        className={`lg:hidden fixed inset-x-0 top-18 sm:top-20 z-40 px-4 pt-2 transition-all duration-300 ease-out ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-3 pointer-events-none opacity-0'
           }`}
       >
         <nav className="rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
@@ -203,7 +203,7 @@ export default function Header() {
             </div>
           </div>
 
-          <div className="max-h-[calc(100dvh-9rem)] overflow-y-auto">
+          <div className="max-h-[calc(100dvh-8rem)] overflow-y-auto">
             {NAV_ITEMS.filter((item) => !('href' in item && item.href === '/contacto')).map((item, idx) => {
               const active = isActive(item)
               const inner = (

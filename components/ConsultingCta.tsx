@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
 function WhatsAppIcon({ className = 'w-4 h-4' }: { className?: string }) {
@@ -11,13 +12,6 @@ function WhatsAppIcon({ className = 'w-4 h-4' }: { className?: string }) {
 }
 
 export default function ConsultingCta() {
-  const scrollToContact = () => {
-    const el = document.getElementById('contacto')
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-
   const openWhatsApp = () => {
     const phone = '51987654321' // Reemplazable con el número oficial de José Luis Zelada
     const text = encodeURIComponent('Hola José Luis, quisiera conversar sobre los desafíos de mi organización.')
@@ -45,13 +39,13 @@ export default function ConsultingCta() {
 
           {/* Right Buttons */}
           <div className="flex flex-wrap items-center gap-3.5 sm:gap-4">
-            <button
-              onClick={scrollToContact}
+            <Link
+              href="/contacto"
               className="inline-flex items-center justify-center gap-2 bg-brand-gold hover:bg-[#b8924b] text-[#0B1522] font-sans font-semibold text-xs sm:text-sm px-6 py-3.5 rounded-[4px] shadow-lg hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 group cursor-pointer"
             >
               <span>Solicita una consultoría</span>
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
+            </Link>
           </div>
 
         </div>

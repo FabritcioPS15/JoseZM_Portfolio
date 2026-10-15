@@ -2,17 +2,27 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Users, Cog, BarChart3, Leaf, ArrowRight } from 'lucide-react'
+import Image from 'next/image'
+import {
+  Users,
+  Cog,
+  BarChart3,
+  Leaf,
+  GraduationCap,
+  ArrowRight,
+  Compass,
+  Target,
+  Award,
+  Handshake,
+} from 'lucide-react'
 
+/* ── Service cards data ─────────────────────────────────────────── */
 interface ServiceItem {
   id: string
   icon: typeof Users
   title: string
   description: string
-  cardBg: string
-  borderColor: string
-  circleBorder: string
-  iconColor: string
+  image: string
 }
 
 const SERVICES_DATA: ServiceItem[] = [
@@ -20,156 +30,280 @@ const SERVICES_DATA: ServiceItem[] = [
     id: 'talento-humano',
     icon: Users,
     title: 'Gestión del Talento Humano',
-    description: 'Atracción, desarrollo, retención y evaluación del talento.',
-    cardBg: 'bg-[#FAF6EE]',
-    borderColor: 'border-[#F2E8D7]',
-    circleBorder: 'border-[#EADBBE]',
-    iconColor: 'text-[#A27228]',
+    description:
+      'Estrategias y herramientas para atraer, desarrollar y retener el talento, fortaleciendo equipos comprometidos y productivos.',
+    image:
+      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop&q=80',
   },
   {
-    id: 'optimizacion-procesos',
-    icon: Cog,
-    title: 'Optimización y Sistematización de Procesos',
-    description: 'Procesos más eficientes y orientados a resultados.',
-    cardBg: 'bg-[#F0F5FA]',
-    borderColor: 'border-[#DFEAF4]',
-    circleBorder: 'border-[#D2E2F0]',
-    iconColor: 'text-[#163860]',
-  },
-  {
-    id: 'gestion-estrategica',
-    icon: BarChart3,
-    title: 'Gestión Estratégica e Indicadores',
-    description: 'Información para tomar mejores decisiones.',
-    cardBg: 'bg-[#F2F7F2]',
-    borderColor: 'border-[#E0EEE0]',
-    circleBorder: 'border-[#D0E6D0]',
-    iconColor: 'text-[#2D6E3F]',
-  },
-  {
-    id: 'desarrollo-organizacional',
+    id: 'diseno-organizacional',
     icon: Leaf,
-    title: 'Desarrollo Organizacional',
-    description: 'Cultura, liderazgo y gestión del cambio.',
-    cardBg: 'bg-[#FAF7F2]',
-    borderColor: 'border-[#EFE7DC]',
-    circleBorder: 'border-[#E6DEC8]',
-    iconColor: 'text-[#2C5734]',
+    title: 'Diseño y Desarrollo Organizacional',
+    description:
+      'Estructuras, roles y procesos alineados a la estrategia para una organización más eficiente, ágil y sostenible.',
+    image:
+      'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=600&h=400&fit=crop&q=80',
+  },
+  {
+    id: 'gestion-procesos',
+    icon: Cog,
+    title: 'Gestión por Procesos',
+    description:
+      'Mapeo, análisis y mejora de procesos para incrementar la eficiencia, reducir reprocesos y generar mayor valor.',
+    image:
+      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop&q=80',
+  },
+  {
+    id: 'indicadores-resultados',
+    icon: BarChart3,
+    title: 'Indicadores y Gestión de Resultados',
+    description:
+      'Definición e implementación de indicadores y tableros de gestión para una mejor toma de decisiones.',
+    image:
+      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&q=80',
+  },
+  {
+    id: 'capacitacion',
+    icon: GraduationCap,
+    title: 'Capacitación y Acompañamiento',
+    description:
+      'Programas de formación y acompañamiento para fortalecer las competencias clave y la cultura organizacional.',
+    image:
+      'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop&q=80',
+  },
+]
+
+/* ── Bottom value propositions ─────────────────────────────────── */
+const VALUE_PROPS = [
+  {
+    icon: Compass,
+    title: 'Enfoque en la realidad',
+    text: 'Soluciones prácticas y adaptadas a cada organización.',
+  },
+  {
+    icon: Target,
+    title: 'Orientación a resultados',
+    text: 'Propuestas que generan impacto medible.',
+  },
+  {
+    icon: Award,
+    title: 'Experiencia comprobada',
+    text: 'Metodologías aplicadas en diversos sectores y tipos de organizaciones.',
+  },
+  {
+    icon: Handshake,
+    title: 'Acompañamiento continuo',
+    text: 'No solo diagnóstico, también implementación y seguimiento.',
   },
 ]
 
 export default function Services() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const cardsRef = useRef<HTMLDivElement>(null)
+  const [heroVisible, setHeroVisible] = useState(false)
+  const [cardsVisible, setCardsVisible] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    const observerHero = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !isVisible) {
-            setIsVisible(true)
-            observer.disconnect()
+          if (entry.isIntersecting && !heroVisible) {
+            setHeroVisible(true)
+            observerHero.disconnect()
+          }
+        })
+      },
+      { threshold: 0.15 }
+    )
+
+    const observerCards = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !cardsVisible) {
+            setCardsVisible(true)
+            observerCards.disconnect()
           }
         })
       },
       { threshold: 0.1 }
     )
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current)
-    }
+    if (heroRef.current) observerHero.observe(heroRef.current)
+    if (cardsRef.current) observerCards.observe(cardsRef.current)
 
-    return () => observer.disconnect()
-  }, [isVisible])
-
-  const scrollToContact = () => {
-    const el = document.getElementById('contacto')
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' })
+    return () => {
+      observerHero.disconnect()
+      observerCards.disconnect()
     }
-  }
+  }, [heroVisible, cardsVisible])
 
   return (
-    <section id="servicios" className="relative py-14 sm:py-16 lg:py-20 bg-white overflow-hidden">
+    <section id="servicios" className="relative bg-white overflow-hidden">
       {/* Anchor helper for backward compatibility */}
       <div id="consultorías" className="absolute -top-20" aria-hidden="true"></div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 sm:mb-12">
-          <div>
+      {/* ── HERO AREA ── City skyline + headline */}
+      <div
+        ref={heroRef}
+        className="relative w-full overflow-hidden"
+        style={{ minHeight: 'clamp(340px, 42vw, 500px)' }}
+      >
+        {/* Background city image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&h=600&fit=crop&q=80"
+            alt=""
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-navy/90 via-brand-navy/75 to-brand-navy/50"></div>
+        </div>
+
+        {/* Hero content */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-full py-16 sm:py-20 lg:py-24">
+          <div
+            className="max-w-2xl"
+            style={{
+              animationName: heroVisible ? 'fadeInUp' : 'none',
+              animationDuration: '0.8s',
+              animationTimingFunction: 'ease-out',
+              animationFillMode: 'forwards',
+              opacity: 0,
+            }}
+          >
+            <p className="text-brand-gold font-sans font-bold text-xs sm:text-[13px] tracking-[0.18em] uppercase mb-3">
+              SERVICIOS
+            </p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-serif font-bold text-white leading-[1.18] tracking-tight mb-4">
+              Servicios para organizaciones que quieren{' '}
+              <span className="italic text-brand-gold">seguir creciendo</span>
+            </h2>
+            <p className="text-gray-300 text-sm sm:text-base lg:text-[16px] font-sans leading-relaxed max-w-xl font-normal">
+              Acompaño a empresas e instituciones en la gestión de su talento,
+              la mejora de sus procesos y el fortalecimiento organizacional,
+              con un enfoque práctico y orientado a resultados.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* ── SERVICES CARDS SECTION ── */}
+      <div className="bg-white py-14 sm:py-16 lg:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          {/* Section header */}
+          <div className="text-center mb-10 sm:mb-14">
             <p className="text-brand-gold font-sans font-bold text-xs sm:text-[13px] tracking-[0.18em] uppercase mb-2">
               MIS SERVICIOS
             </p>
-            <h2 className="text-2xl sm:text-3xl lg:text-[36px] font-serif font-bold text-brand-navy leading-tight text-balance">
-              Soluciones para una gestión organizacional efectiva
-            </h2>
+            <h3 className="text-xl sm:text-2xl lg:text-[30px] font-serif font-bold text-brand-navy leading-snug mb-3">
+              Soluciones en gestión de personas, procesos y resultados
+            </h3>
+            <p className="text-gray-500 text-sm sm:text-[15px] font-sans leading-relaxed max-w-3xl mx-auto font-normal">
+              Diseño e implemento soluciones adaptadas a la realidad de cada organización,
+              combinando experiencia, metodología y un enfoque práctico.
+            </p>
           </div>
 
-          <Link
-            href="/servicios"
-            className="self-start md:self-end flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-brand-navy hover:text-brand-gold transition-colors duration-200 group pb-1 whitespace-nowrap"
+          {/* 5 Cards grid */}
+          <div
+            ref={cardsRef}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 lg:gap-4"
           >
-            <span>Ver todos los servicios</span>
-            <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform duration-200" />
-          </Link>
-        </div>
+            {SERVICES_DATA.map((service, index) => {
+              const Icon = service.icon
+              return (
+                <div
+                  key={service.id}
+                  className="group relative bg-white rounded-xl border border-gray-200/80 overflow-visible flex flex-col transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-gray-300/70"
+                  style={{
+                    animationName: cardsVisible ? 'fadeInUp' : 'none',
+                    animationDuration: '0.6s',
+                    animationTimingFunction: 'ease-out',
+                    animationFillMode: 'forwards',
+                    animationDelay: `${0.08 + index * 0.08}s`,
+                    opacity: 0,
+                  }}
+                >
+                  {/* Card image */}
+                  <div className="relative w-full aspect-[4/3] overflow-visible rounded-t-xl">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 rounded-t-xl"
+                      loading="lazy"
+                    />
+                    {/* Subtle gradient at bottom of image */}
+                    <div className="absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white/20 to-transparent rounded-b-xl"></div>
 
-        {/* 4 Services Grid */}
-        <div
-          ref={containerRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6"
-        >
-          {SERVICES_DATA.map((service, index) => {
-            const Icon = service.icon
-            return (
-              <div
-                key={service.id}
-                className={`group rounded-2xl p-6 sm:p-7 border ${service.borderColor} ${service.cardBg} flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
-                style={{
-                  animationName: isVisible ? 'fadeInUp' : 'none',
-                  animationDuration: '0.6s',
-                  animationTimingFunction: 'ease-out',
-                  animationFillMode: 'forwards',
-                  animationDelay: `${0.1 + index * 0.1}s`,
-                  opacity: 0,
-                }}
-              >
-                {/* Card Top: Icon & Title */}
-                <div>
-                  <div className="flex items-center gap-3.5 mb-3.5">
-                    <div
-                      className={`w-12 h-12 rounded-full bg-white shadow-xs border ${service.circleBorder} flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105`}
-                    >
-                      <Icon size={22} className={service.iconColor} strokeWidth={2.2} />
+                    {/* Numbered circle badge – sits on the bottom edge of the image */}
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 z-10">
+                      <div className="w-8 h-8 rounded-full bg-brand-navy text-white flex items-center justify-center text-sm font-bold font-sans shadow-md border-2 border-white">
+                        {index + 1}
+                      </div>
                     </div>
-                    <h3 className="font-serif font-bold text-base sm:text-[17px] text-brand-navy leading-snug">
-                      {service.title}
-                    </h3>
                   </div>
 
-                  {/* Card Description */}
-                  <p className="text-xs sm:text-[13px] text-gray-600 font-sans leading-relaxed mt-4 font-normal">
-                    {service.description}
-                  </p>
-                </div>
+                  {/* Card body */}
+                  <div className="flex flex-col flex-1 p-4 sm:p-5 pt-6">
+                    <h4 className="font-serif font-bold text-[15px] sm:text-base text-brand-navy leading-snug mb-2.5">
+                      {service.title}
+                    </h4>
 
-                {/* Card Action Link */}
-                <div className="pt-6 mt-auto">
-                  <button
-                    onClick={scrollToContact}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-brand-navy group-hover:text-brand-gold underline underline-offset-4 decoration-gray-300 group-hover:decoration-brand-gold transition-all duration-200 cursor-pointer"
-                  >
-                    <span>Conoce más</span>
-                    <span className="inline-block transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-                  </button>
+                    {/* Description */}
+                    <p className="text-xs sm:text-[13px] text-gray-500 font-sans leading-relaxed font-normal flex-1">
+                      {service.description}
+                    </p>
+
+                    {/* Action link */}
+                    <div className="pt-4 mt-auto">
+                      <Link
+                        href="/servicios"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-brand-gold hover:text-[#b8924b] transition-colors duration-200 cursor-pointer group/link"
+                      >
+                        <span>Conoce más</span>
+                        <ArrowRight
+                          size={13}
+                          className="transition-transform duration-200 group-hover/link:translate-x-0.5"
+                        />
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
+
         </div>
+      </div>
 
+      {/* ── BOTTOM VALUE PROPOSITIONS BAR ── */}
+      <div className="w-full bg-gray-50/80 border-t border-gray-200/80 py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+            {VALUE_PROPS.map((prop) => {
+              const Icon = prop.icon
+              return (
+                <div key={prop.title} className="flex items-start gap-3 group">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <div className="w-9 h-9 rounded-full bg-brand-gold/10 flex items-center justify-center transition-colors duration-300 group-hover:bg-brand-gold/20">
+                      <Icon size={18} className="text-brand-gold" strokeWidth={2.2} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="font-sans font-bold text-[13px] sm:text-sm text-brand-navy leading-tight">
+                      {prop.title}
+                    </span>
+                    <span className="font-sans text-[11px] sm:text-xs text-gray-500 font-normal leading-snug mt-0.5">
+                      {prop.text}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
     </section>
   )
