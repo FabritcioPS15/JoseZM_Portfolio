@@ -43,6 +43,30 @@ function toIsoDate(value?: string): string | undefined {
   return date.toISOString()
 }
 
+/** Convierte HTML del editor a texto plano (para meta descriptions). */
+export function plainText(html?: string): string {
+  if (!html) return ''
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+/** Meta description: usa la descripción o recorta el contenido sin HTML. */
+export function metaDescription(item: SectionItem, max = 160): string {
+  const base = item.description?.trim() || plainText(item.content)
+  if (base.length <= max) return base
+  return `${base.slice(0, max).replace(/\s+\S*$/, '')}…`
+}
+
 export function personSchema(): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
@@ -163,7 +187,7 @@ export function contentSchema(opts: {
   else if ((section.link || '').includes('investigaciones')) type = 'ScholarlyArticle'
 
   const description =
-    item.description || item.content?.replace(/<[^>]*>/g, ' ').slice(0, 160) || undefined
+    item.description || plainText(item.content).slice(0, 160) || undefined
 
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
@@ -172,6 +196,7 @@ export function contentSchema(opts: {
     name: item.title,
     description,
     url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
     inLanguage: 'es-PE',
     author: {
       '@type': 'Person',
@@ -185,16 +210,26 @@ export function contentSchema(opts: {
   if (item.image) schema.image = absoluteUrl(item.image)
 
   const published = toIsoDate(item.date)
+  const modified = toIsoDate(item.updatedAt) || published
   if (published) {
     schema.datePublished = published
-    schema.dateModified = published
+  }
+  if (modified) {
+    schema.dateModified = modified
   }
 
   if (item.tags && item.tags.length > 0) schema.keywords = item.tags.join(', ')
 
+  const bodyText = plainText(item.content)
+  const wordCount = bodyText ? bodyText.split(/\s+/).filter(Boolean).length : 0
+  if (wordCount > 0) schema.wordCount = wordCount
+
   if (type === 'Book') {
     schema.bookFormat = 'https://schema.org/Paperback'
     schema.inLanguage = 'es'
+    if (section.title) schema.bookSeries = section.title
+  } else if (section.title) {
+    schema.articleSection = section.title
   }
 
   if (item.category) schema.genre = item.category

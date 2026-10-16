@@ -3,8 +3,8 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 import SectionItemDetail from '@/components/SectionItemDetail'
-import { getSections, getSectionItem } from '@/lib/sections'
-import { absoluteUrl } from '@/lib/seo'
+import { getSections, findSectionItem, itemHref, itemSlug } from '@/lib/sections'
+import { absoluteUrl, metaDescription } from '@/lib/seo'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -14,17 +14,16 @@ export async function generateStaticParams() {
   const sections = await getSections()
   return sections
     .filter((section) => (section.link || '').replace(/\/+$/, '') === '/investigaciones')
-    .flatMap((section) => section.items.map((item) => ({ id: item.id })))
+    .flatMap((section) => section.items.map((item) => ({ id: itemSlug(item) })))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
-  const found = await getSectionItem('/investigaciones', id)
+  const found = await findSectionItem('/investigaciones', id)
   if (!found) return { title: 'Investigación no encontrada', robots: { index: false, follow: false } }
 
-  const path = `/investigaciones/${id}`
-  const description =
-    found.item.description || found.item.content?.slice(0, 160) || undefined
+  const path = itemHref(found.item, found.section)
+  const description = metaDescription(found.item) || undefined
   const images = found.item.image ? [absoluteUrl(found.item.image)] : undefined
 
   return {

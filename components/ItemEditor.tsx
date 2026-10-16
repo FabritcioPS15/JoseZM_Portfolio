@@ -21,7 +21,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { SectionItem, SectionType } from '@/lib/sections'
-import { parseTags } from '@/lib/sections'
+import { itemSlug, parseTags, slugify } from '@/lib/sections'
 import RichTextEditor from './RichTextEditor'
 
 type ValuePiece = Date | null
@@ -113,6 +113,8 @@ export default function ItemEditor({
   item,
   index,
   sectionType,
+  basePath = '/publicaciones',
+  existingSlugs = [],
   onChange,
   onRemove,
   onUploaded,
@@ -123,6 +125,10 @@ export default function ItemEditor({
   item: SectionItem
   index: number
   sectionType: SectionType
+  /** Ruta base para previsualizar la URL final (ej. /publicaciones). */
+  basePath?: string
+  /** Slugs de las demás publicaciones de la categoría, para avisar de duplicados. */
+  existingSlugs?: string[]
   onChange: (patch: Partial<SectionItem>) => void
   onRemove: () => void
   /** Se llama tras subir la imagen para aplicarla y persistirla sin pulsar Guardar. */
@@ -172,12 +178,31 @@ export default function ItemEditor({
   }, [showCalendar])
   // Último valor de `meta` generado solo, para no pisar lo que escribió el autor.
   const autoMetaRef = useRef(item.meta || '')
+  // Último slug generado solo, para no pisar uno personalizado por el autor.
+  const autoSlugRef = useRef(item.slug || '')
 
   // Mientras se escribe no se re-derivan las etiquetas: si no, el input se
   // reformatea bajo el cursor al teclear la coma.
   const tagsString = tagsDraft ?? (item.tags ?? []).join(', ')
   const words = item.content ? item.content.trim().split(/\s+/).filter(Boolean).length : 0
   const minutes = words > 0 ? Math.max(1, Math.round(words / 200)) : 0
+
+  const slugBase = (basePath || '/publicaciones').replace(/\/+$/, '')
+  const slug = itemSlug(item)
+  const slugTaken =
+    !!item.slug?.trim() &&
+    existingSlugs.some((s) => s.trim().toLowerCase() === item.slug!.trim().toLowerCase())
+
+  // Al escribir el título se propone un slug; si el autor ya lo personalizó, se respeta.
+  const handleTitle = (value: string) => {
+    const patch: Partial<SectionItem> = { title: value }
+    if (!item.slug || item.slug === autoSlugRef.current) {
+      const generated = slugify(value)
+      patch.slug = generated
+      autoSlugRef.current = generated
+    }
+    onChange(patch)
+  }
 
   // Antes había dos fechas sueltas ("fecha visible" y "fecha de publicación").
   // Ahora se elige la fecha real y la etiqueta de la tarjeta se rellena sola.
@@ -334,7 +359,7 @@ export default function ItemEditor({
               <input
                 id={`item-title-${item.id}`}
                 value={item.title}
-                onChange={(e) => onChange({ title: e.target.value })}
+                onChange={(e) => handleTitle(e.target.value)}
                 placeholder="Título de la publicación"
                 autoFocus={autoFocus}
                 className={`${inputClass} text-base font-semibold`}
@@ -579,6 +604,39 @@ export default function ItemEditor({
           }
         >
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="sm:col-span-2 space-y-1.5">
+              <Field
+                label="Enlace (URL)"
+                hint="Se genera desde el título. Puedes ajustarlo con letras, números y guiones."
+              >
+                <div className="flex items-stretch rounded-md border border-gray-200 bg-white overflow-hidden focus-within:border-brand-gold focus-within:ring-2 focus-within:ring-brand-gold/25">
+                  <span className="hidden sm:flex items-center px-2.5 bg-gray-50 text-gray-400 text-xs border-r border-gray-200 whitespace-nowrap">
+                    {slugBase}/
+                  </span>
+                  <input
+                    value={item.slug || ''}
+                    onChange={(e) => onChange({ slug: e.target.value })}
+                    onBlur={(e) => onChange({ slug: slugify(e.target.value) })}
+                    placeholder={slugify(item.title) || 'enlace-de-la-publicacion'}
+                    aria-label="Enlace de la publicación"
+                    className="flex-1 min-w-0 px-3 py-2 text-sm bg-transparent focus:outline-none"
+                  />
+                </div>
+              </Field>
+              <p className="text-[11px] text-gray-400 break-all">
+                URL final:{' '}
+                <span className="text-brand-navy font-medium">
+                  {slugBase}/{slug}
+                </span>
+              </p>
+              {slugTaken && (
+                <p className="text-[11px] text-amber-600 leading-snug">
+                  Ya hay otra publicación con este enlace en la categoría. Usa uno distinto para
+                  evitar conflictos.
+                </p>
+              )}
+            </div>
+
             <Field label="Autor">
               <input
                 value={item.author || ''}
@@ -632,6 +690,18 @@ export default function ItemEditor({
               </div>
             </Field>
           </div>
+
+          {item.updatedAt && (
+            <p className="text-[11px] text-gray-400">
+              Última modificación:{' '}
+              <span className="font-medium text-gray-500">
+                {new Date(item.updatedAt).toLocaleString('es-PE', {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}
+              </span>
+            </p>
+          )}
         </Block>
 
         {/* ---- Guardar publicación ---- */}

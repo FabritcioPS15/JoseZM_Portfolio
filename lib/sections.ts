@@ -16,6 +16,10 @@ export interface SectionItem {
   tags?: string[]
   content?: string
   featured?: boolean
+  /** Parte final de la URL (SEO). Si falta, se usa el id. */
+  slug?: string
+  /** Última modificación en ISO, para dateModified del JSON-LD. */
+  updatedAt?: string
 }
 
 export interface Section {
@@ -53,6 +57,23 @@ export function parseTags(value: string): string[] {
     .filter(Boolean)
 }
 
+/** Convierte un título en un slug: sin acentos, minúsculas y guiones. */
+export function slugify(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
+    .replace(/-+$/g, '')
+}
+
+/** Identificador legible del ítem en la URL. Cae al id si no hay slug. */
+export function itemSlug(item: SectionItem): string {
+  return (item.slug || '').trim() || item.id
+}
+
 // La tarjeta SIEMPRE abre la página de detalle interna del ítem, aunque
 // tenga enlace externo. El enlace externo (item.link) se muestra como
 // botón aparte ("Ver publicación completa") dentro del detalle.
@@ -61,7 +82,7 @@ export function itemHref(item: SectionItem, section: Section): string {
     section.link && section.link.startsWith('/')
       ? section.link.replace(/\/+$/, '')
       : '/publicaciones'
-  return `${base}/${item.id}`
+  return `${base}/${itemSlug(item)}`
 }
 
 export function defaultSection(order: number): Section {
@@ -86,6 +107,46 @@ export function defaultSection(order: number): Section {
       },
     ],
   }
+}
+
+/**
+ * Asigna un slug derivado del título a cada ítem que aún no lo tenga,
+ * garantizando que sea único dentro de su sección. Devuelve las secciones
+ * resultantes y los ids de las que cambiaron, para que el editor las marque
+ * como pendientes de guardar.
+ */
+export function backfillSlugs(sections: Section[]): {
+  sections: Section[]
+  changedIds: string[]
+} {
+  const changedIds: string[] = []
+
+  const next = sections.map((section) => {
+    const used = new Set(
+      section.items.map((it) => (it.slug || '').trim().toLowerCase()).filter(Boolean)
+    )
+
+    let changed = false
+    const items = section.items.map((item) => {
+      if ((item.slug || '').trim()) return item
+
+      const base = slugify(item.title)
+      if (!base) return item
+
+      let candidate = base
+      let n = 2
+      while (used.has(candidate)) candidate = `${base}-${n++}`
+      used.add(candidate)
+      changed = true
+      return { ...item, slug: candidate }
+    })
+
+    if (!changed) return section
+    changedIds.push(section.id)
+    return { ...section, items }
+  })
+
+  return { sections: next, changedIds }
 }
 
 export function normalizeSection(row: Record<string, unknown> | null | undefined): Section | null {
@@ -116,6 +177,9 @@ export function normalizeSection(row: Record<string, unknown> | null | undefined
           typeof item.content === 'string' && item.content ? item.content : undefined,
         featured:
           typeof item.featured === 'boolean' ? item.featured : undefined,
+        slug: typeof item.slug === 'string' && item.slug ? item.slug : undefined,
+        updatedAt:
+          typeof item.updatedAt === 'string' && item.updatedAt ? item.updatedAt : undefined,
       } satisfies SectionItem
     })
     : []
@@ -168,14 +232,29 @@ export async function getSectionByLink(link: string): Promise<Section | null> {
   return sections.find((s) => s.link === link) ?? null
 }
 
-export async function getSectionItem(
+export type ItemMatch = 'slug' | 'id'
+
+/** Busca un ítem por su slug (preferido) o su id. Indica con qué coincidió. */
+export async function findSectionItem(
   link: string,
-  id: string
-): Promise<{ item: SectionItem; section: Section } | null> {
+  key: string
+): Promise<{ item: SectionItem; section: Section; matchedBy: ItemMatch } | null> {
   const section = await getSectionByLink(link)
   if (!section) return null
-  const item = section.items.find((it) => it.id === id)
+
+  const bySlug = section.items.find((it) => it.slug && it.slug === key)
+  const item = bySlug ?? section.items.find((it) => it.id === key)
   if (!item) return null
+
+  return { item, section, matchedBy: bySlug ? 'slug' : 'id' }
+}
+
+export async function getSectionItem(
+  link: string,
+  key: string
+): Promise<{ item: SectionItem; section: Section } | null> {
+  const found = await findSectionItem(link, key)
+  if (!found) return null
 
   // Payload mínimo al cliente: la página de detalle solo usa título/enlace/tipo de la
   // sección; los "relacionados" se limitan a 3 y sin el contenido pesado.
@@ -185,16 +264,19 @@ export async function getSectionItem(
   }
 
   return {
-    item,
+    item: found.item,
     section: {
-      id: section.id,
-      title: section.title,
-      icon: section.icon,
-      type: section.type,
-      link: section.link,
-      order: section.order,
+      id: found.section.id,
+      title: found.section.title,
+      icon: found.section.icon,
+      type: found.section.type,
+      link: found.section.link,
+      order: found.section.order,
       isVisible: true,
-      items: section.items.filter((it) => it.id !== id).slice(0, 3).map(stripContent),
+      items: found.section.items
+        .filter((it) => it.id !== found.item.id)
+        .slice(0, 3)
+        .map(stripContent),
     },
   }
 }

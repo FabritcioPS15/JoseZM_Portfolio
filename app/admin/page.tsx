@@ -31,8 +31,10 @@ import {
   TriangleAlert,
 } from 'lucide-react'
 import {
+  backfillSlugs,
   defaultSection,
   newId,
+  slugify,
   type Section,
   type SectionIcon,
   type SectionItem,
@@ -113,15 +115,52 @@ export default function AdminPage() {
       if (res.status === 401) return 'auth'
       const data = await res.json().catch(() => ({}))
       if (Array.isArray(data.sections)) {
-        setSections(data.sections)
+        // Genera el enlace (slug) de las publicaciones que aún no lo tienen y
+        // lo persiste solo, sin obligar a pulsar "Guardar todo".
+        const { sections: withSlugs, changedIds } = backfillSlugs(data.sections as Section[])
+        setSections(withSlugs)
         setDirtyIds(new Set())
+
+        if (changedIds.length > 0) {
+          const saved: Section[] = []
+          for (const id of changedIds) {
+            const section = withSlugs.find((s) => s.id === id)
+            if (!section) continue
+            try {
+              const put = await fetch(`/api/sections/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(section),
+              })
+              const result = await put.json().catch(() => ({}))
+              if (put.ok && result.section) saved.push(result.section as Section)
+            } catch {
+              // Si falla, la categoría queda pendiente para reintentar con "Guardar todo".
+            }
+          }
+
+          if (saved.length > 0) {
+            setSections((prev) => prev.map((s) => saved.find((sv) => sv.id === s.id) ?? s))
+            notify('ok', 'Actualizamos los enlaces (URL) de tus publicaciones.')
+          }
+
+          const failed = changedIds.filter((id) => !saved.some((s) => s.id === id))
+          if (failed.length > 0) {
+            setDirtyIds(new Set(failed))
+            notify(
+              'error',
+              'No pudimos guardar algunos enlaces. Pulsa "Guardar todo" para reintentar.'
+            )
+          }
+        }
+
         return 'ok'
       }
       return 'error'
     } catch {
       return 'error'
     }
-  }, [])
+  }, [notify])
 
   const applyLoadResult = (result: LoadResult) => {
     setStatus(result === 'ok' ? 'ready' : result === 'auth' ? 'login' : 'error')
@@ -213,7 +252,11 @@ export default function AdminPage() {
         s.id === sectionId
           ? {
               ...s,
-              items: s.items.map((it) => (it.id === itemId ? { ...it, ...patch } : it)),
+              items: s.items.map((it) =>
+                it.id === itemId
+                  ? { ...it, ...patch, updatedAt: new Date().toISOString() }
+                  : it
+              ),
             }
           : s
       )
@@ -238,6 +281,7 @@ export default function AdminPage() {
       title: '',
       meta: '',
       image: '',
+      updatedAt: new Date().toISOString(),
       // Reutiliza categoría y autor del último ítem para acelerar la creación
       category: last?.category,
       author: last?.author,
@@ -284,6 +328,8 @@ export default function AdminPage() {
         items.splice(idx + 1, 0, {
           ...source,
           id: copyId,
+          slug: undefined,
+          updatedAt: new Date().toISOString(),
           title: source.title ? `${source.title} (copia)` : '',
         })
         return { ...s, items }
@@ -1242,6 +1288,11 @@ export default function AdminPage() {
                                       item={item}
                                       index={itemIndex}
                                       sectionType={selectedSection.type}
+                                      basePath={selectedSection.link || '/publicaciones'}
+                                      existingSlugs={selectedSection.items
+                                        .filter((it) => it.id !== item.id)
+                                        .map((it) => it.slug || '')
+                                        .filter(Boolean)}
                                       onChange={(patch) => patchItem(selectedSection.id, item.id, patch)}
                                       onRemove={() => removeItem(selectedSection.id, item.id)}
                                       onUploaded={(url) => {
@@ -1249,7 +1300,7 @@ export default function AdminPage() {
                                         // para que la imagen no dependa de pulsar
                                         // "Guardar" y luego perderla.
                                         const items = selectedSection.items.map((it) =>
-                                          it.id === item.id ? { ...it, image: url } : it
+                                          it.id === item.id ? { ...it, image: url, updatedAt: new Date().toISOString() } : it
                                         )
                                         const next = { ...selectedSection, items }
                                         setSections((prev) =>

@@ -22,8 +22,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const dynamicRoutes: MetadataRoute.Sitemap = sections.flatMap((section) =>
     section.items.map((item) => {
-      const parsed = item.date ? new Date(item.date) : null
-      const lastModified = parsed && !Number.isNaN(parsed.getTime()) ? parsed : now
+      const modified = item.updatedAt
+        ? new Date(item.updatedAt)
+        : item.date
+          ? new Date(item.date)
+          : null
+      const lastModified = modified && !Number.isNaN(modified.getTime()) ? modified : now
       return {
         url: `${SITE_URL}${itemHref(item, section)}`,
         lastModified,

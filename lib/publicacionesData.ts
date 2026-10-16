@@ -218,6 +218,7 @@ export function getPublicacionById(id: string): PublicacionItem | undefined {
 export function asSectionItem(p: PublicacionItem): SectionItem {
   return {
     id: p.id,
+    slug: p.slug || p.id,
     title: p.title,
     meta: p.meta || p.date,
     category: p.category,
