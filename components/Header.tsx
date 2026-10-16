@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X, ArrowRight, Mail, Search } from 'lucide-react'
+import SearchDialog from './SearchDialog'
 
 type NavItem = { label: string; href: string } | { label: string; anchor: string }
 
@@ -19,6 +20,7 @@ const HEADER_OFFSET = 80
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeAnchor, setActiveAnchor] = useState('inicio')
   const pathname = usePathname()
@@ -160,7 +162,10 @@ export default function Header() {
 
             {/* Search icon */}
             <button
-              onClick={() => router.push('/publicaciones')}
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                setIsSearchOpen(true)
+              }}
               aria-label="Buscar publicaciones"
               title="Buscar"
               className="p-2 text-gray-700 hover:text-brand-gold hover:scale-105 active:scale-95 transition-all duration-200"
@@ -198,9 +203,17 @@ export default function Header() {
         <nav className="rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-cream/60 to-transparent">
             <p className="text-[11px] font-bold tracking-[0.2em] text-brand-navy/60 uppercase">Menú</p>
-            <div className="relative w-6 h-6 flex-shrink-0">
-              <Image src="/images/Logotipo.png" alt="Logo" fill className="object-contain" />
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false)
+                setIsSearchOpen(true)
+              }}
+              className="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-brand-navy/70 hover:bg-white hover:text-brand-gold transition-colors"
+            >
+              <Search size={15} />
+              Buscar
+            </button>
           </div>
 
           <div className="max-h-[calc(100dvh-8rem)] overflow-y-auto">
@@ -253,6 +266,8 @@ export default function Header() {
           </Link>
         </nav>
       </div>
+
+      <SearchDialog open={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   )
 }

@@ -205,27 +205,14 @@ export default function FeaturedGrid({ sections = [] }: { sections?: Section[] }
                 {/* Book 1: TALENTO EN ACCIÓN */}
                 <div className="book3d-scene w-[88px] sm:w-[94px] aspect-[2/3]">
                   <div className="book3d">
-                    <div className="book3d-face rounded-[2px] shadow-md border border-gray-200 flex flex-col justify-between p-2 bg-gradient-to-b from-white to-gray-50">
-                      <div className="text-center pt-0.5">
-                        <p className="text-[8px] font-black tracking-tight text-brand-navy leading-none">
-                          TALENTO
-                        </p>
-                        <p className="text-[7.5px] font-bold tracking-tight text-brand-gold leading-none mt-0.5">
-                          EN ACCIÓN
-                        </p>
-                      </div>
-                      <div className="w-full h-11 relative overflow-hidden rounded-[2px] my-1 shadow-inner">
-                        <Image
-                          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=150&h=120&fit=crop"
-                          alt="Talento en Acción"
-                          fill
-                          sizes="90px"
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="text-[5.5px] text-gray-500 text-center tracking-tighter uppercase font-semibold">
-                        JOSÉ LUIS ZELADA
-                      </p>
+                    <div className="book3d-face rounded-[2px] shadow-md border border-gray-200 bg-white">
+                      <Image
+                        src="/images/books/talento-en-accion.png"
+                        alt="Talento en acción: equipo que impulsa"
+                        fill
+                        sizes="100px"
+                        className="object-cover"
+                      />
                     </div>
                   </div>
                 </div>
@@ -233,30 +220,14 @@ export default function FeaturedGrid({ sections = [] }: { sections?: Section[] }
                 {/* Book 2: COMUNICA LIDERA IMPACTA (center, slightly elevated) */}
                 <div className="book3d-scene w-[96px] sm:w-[102px] aspect-[2/3] -translate-y-1.5 z-10">
                   <div className="book3d">
-                    <div className="book3d-face rounded-[2px] shadow-xl border border-gray-200 flex flex-col justify-between p-2 bg-white">
-                      <div className="text-center pt-0.5">
-                        <p className="text-[8.5px] font-black tracking-tight text-brand-navy leading-none">
-                          COMUNICA
-                        </p>
-                        <p className="text-[8px] font-black tracking-tight text-[#163860] leading-none mt-0.5">
-                          LIDERA
-                        </p>
-                        <p className="text-[8px] font-black tracking-tight text-brand-gold leading-none mt-0.5">
-                          IMPACTA
-                        </p>
-                      </div>
-                      <div className="w-full h-12 relative overflow-hidden rounded-[2px] my-1 shadow-inner">
-                        <Image
-                          src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=150&h=120&fit=crop"
-                          alt="Comunica Lidera Impacta"
-                          fill
-                          sizes="100px"
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="text-[6px] text-gray-600 text-center tracking-tighter uppercase font-bold">
-                        JOSÉ LUIS ZELADA
-                      </p>
+                    <div className="book3d-face rounded-[2px] shadow-xl border border-gray-200 bg-white">
+                      <Image
+                        src="/images/books/comunica-lidera-impacta.png"
+                        alt="Comunica, Lidera, Impacta"
+                        fill
+                        sizes="110px"
+                        className="object-cover"
+                      />
                     </div>
                   </div>
                 </div>
@@ -264,30 +235,14 @@ export default function FeaturedGrid({ sections = [] }: { sections?: Section[] }
                 {/* Book 3: EL PRÍNCIPE DEL SOL */}
                 <div className="book3d-scene w-[88px] sm:w-[94px] aspect-[2/3]">
                   <div className="book3d">
-                    <div className="book3d-face rounded-[2px] shadow-md border border-amber-900/40 flex flex-col justify-between p-2 bg-gradient-to-b from-[#693315] via-[#8E4A1E] to-[#2E150A] text-white">
-                      <div className="text-center pt-0.5">
-                        <p className="text-[6.5px] font-bold tracking-wider text-amber-200 leading-none">
-                          EL
-                        </p>
-                        <p className="text-[8px] font-black tracking-wider text-amber-300 leading-none mt-0.5">
-                          PRÍNCIPE
-                        </p>
-                        <p className="text-[7px] font-bold tracking-wider text-amber-100 leading-none mt-0.5">
-                          DEL SOL
-                        </p>
-                      </div>
-                      <div className="w-full h-11 relative overflow-hidden rounded-[2px] my-1 shadow-inner">
-                        <Image
-                          src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150&h=120&fit=crop"
-                          alt="El Príncipe del Sol"
-                          fill
-                          sizes="90px"
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="text-[5.5px] text-amber-200/90 text-center tracking-tighter uppercase font-medium">
-                        JOSÉ LUIS ZELADA
-                      </p>
+                    <div className="book3d-face rounded-[2px] shadow-md border border-amber-900/40 bg-white">
+                      <Image
+                        src="/images/books/el-principe-del-sol.png"
+                        alt="El Príncipe del Sol: Guardián Andino"
+                        fill
+                        sizes="100px"
+                        className="object-cover"
+                      />
                     </div>
                   </div>
                 </div>

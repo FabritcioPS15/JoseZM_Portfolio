@@ -26,10 +26,10 @@ export default function Footer() {
   return (
     <footer id="contacto" className="relative bg-white text-gray-700 border-t border-gray-200 overflow-hidden pt-12 md:pt-16 pb-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+
         {/* Main Footer Columns */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 mb-12">
-          
+
           {/* Column 1: Logo & Brand */}
           <div className="md:col-span-5 flex flex-col items-start text-left">
             {/* Logotipo image */}
@@ -54,7 +54,7 @@ export default function Footer() {
             </div>
 
             <p className="text-xs text-gray-600 max-w-sm mt-3.5 leading-relaxed font-normal">
-              José Luis Zelada Minaya — consultor en gestión del talento humano. Contribuyo al
+              José Luis Zelada — consultor en gestión del talento humano. Contribuyo al
               desarrollo de organizaciones más humanas, eficientes y sostenibles.
             </p>
           </div>
