@@ -112,29 +112,32 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Right Column: Floating Quote Card (desktop only) */}
-            <div
-              className="hidden lg:col-span-5 xl:col-span-5 lg:flex lg:justify-end lg:translate-x-0 xl:translate-x-4 2xl:translate-x-12 lg:-translate-y-24 xl:-translate-y-28"
-              style={{
-                animationName: isVisible ? 'fadeInUp' : 'none',
-                animationDuration: '0.8s',
-                animationTimingFunction: 'ease-out',
-                animationFillMode: 'forwards',
-                animationDelay: '0.2s',
-                opacity: 0,
-              }}
-            >
-              <div className="bg-white rounded-xl shadow-2xl p-3 sm:p-4 max-w-[195px] sm:max-w-[215px] lg:max-w-[225px] border border-gray-100 text-left transition-transform duration-300 hover:scale-[1.02]">
-                <p className="font-serif text-[#0F2440] text-sm sm:text-[15px] font-medium leading-snug">
-                  “Gestión que conecta personas, procesos y resultados”
-                </p>
-                <div className="w-6 h-[1.5px] bg-brand-gold my-2.5"></div>
-                <p className="font-sans text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5">
-                  Consultoría en gestión organizacional, talento y mejora de procesos.
-                </p>
-              </div>
-            </div>
+            {/* Right Column: Placeholder spacer for grid layout on desktop */}
+            <div className="hidden lg:block lg:col-span-5 xl:col-span-5 pointer-events-none" />
 
+          </div>
+        </div>
+
+        {/* Floating Quote Card (desktop & laptop): Más arriba, más a la derecha y tamaño más compacto */}
+        <div
+          className="hidden lg:block absolute top-3 lg:top-4 right-4 lg:right-6 xl:right-10 2xl:right-14 z-20 pointer-events-auto"
+          style={{
+            animationName: isVisible ? 'fadeInUp' : 'none',
+            animationDuration: '0.8s',
+            animationTimingFunction: 'ease-out',
+            animationFillMode: 'forwards',
+            animationDelay: '0.2s',
+            opacity: 0,
+          }}
+        >
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-xl p-3 sm:p-3.5 max-w-[240px] lg:max-w-[260px] xl:max-w-[275px] border border-gray-100 text-left transition-all duration-300 hover:scale-[1.02] hover:shadow-brand-gold/15 hover:shadow-2xl">
+            <p className="font-serif text-[#0F2440] text-sm lg:text-[15px] font-medium leading-snug">
+              “Gestión que conecta personas, procesos y resultados”
+            </p>
+            <div className="w-6 h-[1.5px] bg-brand-gold my-2"></div>
+            <p className="font-sans text-[10px] lg:text-[11px] text-gray-500 font-medium leading-relaxed">
+              Consultoría en gestión organizacional, talento y mejora de procesos.
+            </p>
           </div>
         </div>
       </div>
