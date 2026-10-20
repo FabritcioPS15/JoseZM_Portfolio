@@ -22,6 +22,19 @@ export const NAME_VARIANTS = [
   'José Zelada',
   'José Minaya',
   'Zelada Minaya',
+  // Sin acentos para búsquedas
+  'Jose Luis Zelada',
+  'Jose Luis Minaya',
+  'Jose Luis Zelada Minaya',
+  'Jose Zelada Minaya',
+  'Jose Zelada',
+  'Jose Minaya',
+  'Jose Zelada Peru',
+  'Jose Luis Zelada Peru',
+  'Jose Zelada Consultor',
+  'Jose Luis Zelada Consultor',
+  'Consultor RRHH Jose Zelada',
+  'Consultor Talento Humano Jose Zelada',
 ]
 
 export const LOGO_URL = `${SITE_URL}/images/Logotipo.png`

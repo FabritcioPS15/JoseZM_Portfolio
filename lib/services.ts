@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { absoluteUrl } from '@/lib/seo'
+import { absoluteUrl, SITE_URL, PERSON_ID, SITE_NAME } from '@/lib/seo'
 
 export type Service = {
   slug: string
@@ -114,6 +114,41 @@ export function serviceHref(service: Service): string {
   return `/servicios/${service.slug}`
 }
 
+/** Schema.org para una página de servicio */
+export function serviceSchema(service: Service): Record<string, unknown> {
+  const path = `/servicios/${service.slug}`
+  const url = absoluteUrl(path)
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${url}#service`,
+    name: service.title,
+    description: service.description,
+    url,
+    image: absoluteUrl(service.image),
+    provider: {
+      '@type': 'Person',
+      '@id': PERSON_ID,
+      name: SITE_NAME,
+    },
+    areaServed: {
+      '@type': 'Country',
+      name: 'Perú',
+    },
+    inLanguage: 'es-PE',
+    offers: {
+      '@type': 'Offer',
+      name: service.title,
+      description: service.description,
+      availableAtOrFrom: {
+        '@type': 'Place',
+        name: 'Perú',
+      },
+    },
+  }
+}
+
 /** Metadata estándar para la página de detalle de un servicio. */
 export function servicePageMetadata(slug: string): Metadata {
   const service = getServiceBySlug(slug)
@@ -133,7 +168,14 @@ export function servicePageMetadata(slug: string): Metadata {
       title: `${service.title} | José Luis Zelada`,
       description,
       url: absoluteUrl(path),
-      images: [absoluteUrl(service.image)],
+      images: [
+        {
+          url: absoluteUrl(service.image),
+          width: 1200,
+          height: 630,
+          alt: service.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',

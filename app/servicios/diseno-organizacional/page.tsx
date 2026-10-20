@@ -5,7 +5,8 @@ import { FaArrowRight, FaCheck, FaChevronRight, FaBuilding, FaProjectDiagram, Fa
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
-import { getServiceBySlug, servicePageMetadata } from '@/lib/services'
+import JsonLd from '@/components/JsonLd'
+import { getServiceBySlug, servicePageMetadata, serviceSchema } from '@/lib/services'
 
 /* ──────────────────────────────────────────────────────────────
  * Contenido único de ESTE servicio — edita aquí.
@@ -158,6 +159,7 @@ export default function DisenoOrganizacionalPage() {
 
   return (
     <main className="min-h-screen bg-white">
+      <JsonLd data={[serviceSchema(service)]} />
       <Header />
 
       {/* ── Hero Section ─────────────────────────────────────────── */}

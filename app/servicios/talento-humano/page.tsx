@@ -26,7 +26,8 @@ import Footer from '@/components/Footer'
 import ScrollToTop from '@/components/ScrollToTop'
 import ConsultingCta from '@/components/ConsultingCta'
 import OtherServices from '@/components/OtherServices'
-import { servicePageMetadata } from '@/lib/services'
+import JsonLd from '@/components/JsonLd'
+import { servicePageMetadata, serviceSchema, getServiceBySlug } from '@/lib/services'
 
 export const metadata: Metadata = servicePageMetadata('talento-humano')
 
@@ -192,8 +193,12 @@ const FAQS = [
 ]
 
 export default function TalentoHumanoPage() {
+  const service = getServiceBySlug(SLUG)
+  if (!service) return null
+
   return (
     <main className="min-h-screen bg-white">
+      <JsonLd data={[serviceSchema(service)]} />
       <Header />
 
       {/* ── 1. Hero Section ────────────────────────────────────────── */}
