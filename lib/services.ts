@@ -1,3 +1,6 @@
+import type { Metadata } from 'next'
+import { absoluteUrl } from '@/lib/seo'
+
 export type Service = {
   slug: string
   title: string
@@ -10,6 +13,11 @@ export type Service = {
   points: string[]
 }
 
+/**
+ * Catálogo de servicios (usado por home, nav, sitemap y "otros servicios").
+ * El contenido detallado de cada página vive en:
+ * app/servicios/<slug>/page.tsx
+ */
 export const SERVICES: Service[] = [
   {
     slug: 'talento-humano',
@@ -18,7 +26,7 @@ export const SERVICES: Service[] = [
     description:
       'Estrategias y herramientas para atraer, desarrollar y retener el talento, fortaleciendo equipos comprometidos y productivos.',
     image:
-      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop&q=80',
+      '/images/Servicios/Gestion_de_talento_humano.jpeg',
     detail:
       'Las personas son el motor de cualquier organización. Acompaño a los equipos directivos a diseñar una gestión del talento coherente con su estrategia: desde cómo atraen a las personas correctas, hasta cómo las desarrollan, reconocen y retienen. El resultado son equipos más comprometidos, con claridad en sus roles y alineados con los objetivos del negocio.',
     points: [
@@ -35,7 +43,7 @@ export const SERVICES: Service[] = [
     description:
       'Estructuras, roles y procesos alineados a la estrategia para una organización más eficiente, ágil y sostenible.',
     image:
-      'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=600&h=400&fit=crop&q=80',
+      '/images/Servicios/Diseño_y_desarrollo_organizacional.jpeg',
     detail:
       'Una buena estrategia necesita una estructura que la sostenga. Analizo la estructura actual de la organización —niveles de decisión, roles, responsabilidades y flujos de comunicación— y la rediseño para que soporte el crecimiento y la agilidad que el negocio requiere, sin perder el control ni la claridad.',
     points: [
@@ -52,7 +60,7 @@ export const SERVICES: Service[] = [
     description:
       'Mapeo, análisis y mejora de procesos para incrementar la eficiencia, reducir reprocesos y generar mayor valor.',
     image:
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop&q=80',
+      '/images/Servicios/Gestion_por_procesos.jpeg',
     detail:
       'Cuando los procesos no están claros, el esfuerzo se pierde en reprocesos, esperas y decisiones que nadie sabe quién toma. Mapeo y documento los procesos clave de la organización, identifico cuellos de botella y propongo mejoras concretas para que el trabajo fluya con menos fricción y genere más valor.',
     points: [
@@ -69,7 +77,7 @@ export const SERVICES: Service[] = [
     description:
       'Definición e implementación de indicadores y tableros de gestión para una mejor toma de decisiones.',
     image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&q=80',
+      '/images/Servicios/Indicadores_y_gestion_de_resultados.jpeg',
     detail:
       'Lo que no se mide, no se gestiona. Defino junto al equipo los indicadores que realmente importan para el negocio, los conecto con los objetivos estratégicos y construyo tableros de gestión que permiten tomar decisiones con información confiable y a tiempo, en lugar de intuiciones.',
     points: [
@@ -86,7 +94,7 @@ export const SERVICES: Service[] = [
     description:
       'Programas de formación y acompañamiento para fortalecer las competencias clave y la cultura organizacional.',
     image:
-      'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop&q=80',
+      '/images/Servicios/Capacitacion_y_acompañamiento.jpeg',
     detail:
       'La mejora organizacional es sostenible solo cuando las personas la hacen propia. Diseño e impulso programas de formación y acompañamiento práctico —talleres, mentoría y seguimiento— para fortalecer las competencias de los equipos y sostener los cambios en el tiempo.',
     points: [
@@ -104,4 +112,34 @@ export function getServiceBySlug(slug: string): Service | undefined {
 
 export function serviceHref(service: Service): string {
   return `/servicios/${service.slug}`
+}
+
+/** Metadata estándar para la página de detalle de un servicio. */
+export function servicePageMetadata(slug: string): Metadata {
+  const service = getServiceBySlug(slug)
+  if (!service) {
+    return { title: 'Servicio no encontrado', robots: { index: false, follow: false } }
+  }
+
+  const path = `/servicios/${service.slug}`
+  const description = service.description
+
+  return {
+    title: service.title,
+    description,
+    alternates: { canonical: path },
+    openGraph: {
+      type: 'website',
+      title: `${service.title} | José Luis Zelada`,
+      description,
+      url: absoluteUrl(path),
+      images: [absoluteUrl(service.image)],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${service.title} | José Luis Zelada`,
+      description,
+      images: [absoluteUrl(service.image)],
+    },
+  }
 }
