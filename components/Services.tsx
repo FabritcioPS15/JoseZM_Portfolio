@@ -185,7 +185,7 @@ export default function Services() {
 
                   {/* Card body */}
                   <div className="flex flex-col flex-1 p-4 sm:p-5 pt-6">
-                    <h4 className="font-serif font-bold text-[15px] sm:text-base text-brand-navy leading-snug mb-2.5">
+                    <h4 className="font-sans font-bold text-[15px] sm:text-base text-brand-navy leading-snug mb-2.5">
                       {service.title}
                     </h4>
 

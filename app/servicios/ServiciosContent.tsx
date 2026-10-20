@@ -154,7 +154,7 @@ export default function ServiciosContent() {
 
                 {/* Card body */}
                 <div className="flex flex-col flex-1 p-4 sm:p-5 pt-6">
-                  <h3 className="font-serif font-bold text-[15px] sm:text-base text-brand-navy leading-snug mb-2.5">
+                  <h3 className="font-sans font-bold text-[15px] sm:text-base text-brand-navy leading-snug mb-2.5">
                     {service.title}
                   </h3>
 

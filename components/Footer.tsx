@@ -59,67 +59,79 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 2: Enlaces */}
-          <div className="md:col-span-4 text-left">
-            <h3 className="font-sans font-bold text-xs sm:text-sm text-brand-navy uppercase tracking-wider mb-4">
-              Enlaces
-            </h3>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-xs sm:text-sm">
-              <div className="flex flex-col space-y-2.5">
-                <button
-                  onClick={() => scrollToAnchor('inicio')}
-                  className="text-left text-gray-600 hover:text-brand-gold transition-colors duration-200 cursor-pointer"
-                >
-                  Inicio
-                </button>
-                <Link
-                  href="/servicios"
-                  className="text-left text-gray-600 hover:text-brand-gold transition-colors duration-200"
-                >
-                  Servicios
-                </Link>
-              </div>
+          {/* Enlaces + Sígueme: en móvil van en columna (enlaces arriba, Contáctame + LinkedIn debajo) */}
+          <div className="md:col-span-7 flex flex-col items-start gap-5 md:contents">
+            {/* Column 2: Enlaces */}
+            <div className="md:col-span-4 text-left">
+              <h3 className="font-sans font-bold text-xs sm:text-sm text-brand-navy uppercase tracking-wider mb-4">
+                Enlaces
+              </h3>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 text-xs sm:text-sm md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-2.5">
+                <div className="flex flex-row md:flex-col items-center md:items-start gap-x-5 md:gap-x-0 md:space-y-2.5">
+                  <button
+                    onClick={() => scrollToAnchor('inicio')}
+                    className="text-left whitespace-nowrap text-gray-600 hover:text-brand-gold transition-colors duration-200 cursor-pointer"
+                  >
+                    Inicio
+                  </button>
+                  <Link
+                    href="/servicios"
+                    className="text-left whitespace-nowrap text-gray-600 hover:text-brand-gold transition-colors duration-200"
+                  >
+                    Servicios
+                  </Link>
+                </div>
 
-              <div className="flex flex-col space-y-2.5">
-                <Link
-                  href="/investigaciones"
-                  className="text-gray-600 hover:text-brand-gold transition-colors duration-200"
-                >
-                  Investigaciones
-                </Link>
-                <Link
-                  href="/publicaciones"
-                  className="text-gray-600 hover:text-brand-gold transition-colors duration-200"
-                >
-                  Libros
-                </Link>
-                <Link
-                  href="/contacto"
-                  className="text-gray-600 hover:text-brand-gold transition-colors duration-200"
-                >
-                  Contacto
-                </Link>
+                <div className="flex flex-row md:flex-col items-center md:items-start gap-x-5 md:gap-x-0 md:space-y-2.5">
+                  <Link
+                    href="/investigaciones"
+                    className="hidden md:block text-gray-600 hover:text-brand-gold transition-colors duration-200"
+                  >
+                    Investigaciones
+                  </Link>
+                  <Link
+                    href="/publicaciones"
+                    className="hidden md:block text-gray-600 hover:text-brand-gold transition-colors duration-200"
+                  >
+                    Libros
+                  </Link>
+                  <Link
+                    href="/publicaciones"
+                    className="md:hidden text-gray-600 hover:text-brand-gold transition-colors duration-200"
+                  >
+                    Publicaciones
+                  </Link>
+                  <Link
+                    href="/contacto"
+                    className="whitespace-nowrap text-gray-600 hover:text-brand-gold transition-colors duration-200"
+                  >
+                    Contacto
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Column 3: Sígueme */}
-          <div className="md:col-span-3 text-left">
-            <h3 className="font-sans font-bold text-xs sm:text-sm text-brand-navy uppercase tracking-wider mb-4">
-              Sígueme
-            </h3>
-            <div className="flex items-center gap-3">
-              <a
-                href="https://linkedin.com/in/joseluiszelada"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Perfil de LinkedIn de José Luis Zelada"
-                className="w-10 h-10 rounded-md bg-[#0A66C2] text-white flex items-center justify-center hover:opacity-90 hover:scale-105 transition-all shadow-xs"
-              >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                </svg>
-              </a>
+            {/* Column 3: Sígueme */}
+            <div className="md:col-span-3 text-left">
+              <h3 className="hidden md:block font-sans font-bold text-xs sm:text-sm text-brand-navy uppercase tracking-wider mb-4">
+                Sígueme
+              </h3>
+              <div className="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-3">
+                <p className="md:hidden font-sans font-bold text-xs sm:text-sm text-brand-navy uppercase tracking-wider whitespace-nowrap">
+                  Contáctame
+                </p>
+                <a
+                  href="https://linkedin.com/in/joseluiszelada"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Perfil de LinkedIn de José Luis Zelada"
+                  className="w-10 h-10 rounded-md bg-[#0A66C2] text-white flex items-center justify-center hover:opacity-90 hover:scale-105 transition-all shadow-xs"
+                >
+                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
 

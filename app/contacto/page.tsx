@@ -114,14 +114,6 @@ export default function ContactoPage() {
               description="Escríbeme y te responderé a la brevedad posible."
             />
             <ChannelCard
-              href={`https://wa.me/${WHATSAPP}`}
-              external
-              icon={<MessageCircle size={22} />}
-              label="WhatsApp"
-              value="+51 987 654 321"
-              description="Conversemos directamente sobre los desafíos de tu empresa."
-            />
-            <ChannelCard
               href={LINKEDIN}
               external
               icon={<LinkedInIcon size={22} />}

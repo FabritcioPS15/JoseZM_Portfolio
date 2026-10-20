@@ -22,7 +22,7 @@ export default function OtherServices({ currentSlug }: { currentSlug: string }) 
               href={serviceHref(other)}
               className="group bg-white rounded-xl border border-gray-200/80 p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-gray-300/70"
             >
-              <p className="font-serif font-bold text-[14px] text-brand-navy leading-snug mb-1.5">
+              <p className="font-sans font-bold text-[14px] text-brand-navy leading-snug mb-1.5">
                 {other.shortTitle}
               </p>
               <p className="text-[12px] text-gray-500 font-sans leading-relaxed font-normal line-clamp-2">
