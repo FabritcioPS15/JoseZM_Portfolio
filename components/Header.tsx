@@ -4,14 +4,22 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, X, ArrowRight, Mail, Search } from 'lucide-react'
-import SearchDialog from './SearchDialog'
+import { Menu, X, ArrowRight, Mail, Store, ChevronDown } from 'lucide-react'
 
-type NavItem = { label: string; href: string } | { label: string; anchor: string }
+type NavChild = { label: string; href: string }
+type NavItem = { label: string; href: string; children?: NavChild[] } | { label: string; anchor: string }
+
+const SERVICES_NAV: NavChild[] = [
+  { label: 'Gestión del Talento Humano', href: '/servicios/talento-humano' },
+  { label: 'Diseño y Desarrollo Organizacional', href: '/servicios/diseno-organizacional' },
+  { label: 'Gestión por Procesos', href: '/servicios/gestion-procesos' },
+  { label: 'Indicadores y Gestión de Resultados', href: '/servicios/indicadores-resultados' },
+  { label: 'Capacitación y Acompañamiento', href: '/servicios/capacitacion' },
+]
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'Inicio', anchor: 'inicio' },
-  { label: 'Servicios', href: '/servicios' },
+  { label: 'Servicios', href: '/servicios', children: SERVICES_NAV },
   { label: 'Publicaciones', href: '/publicaciones' },
   { label: 'Contacto', href: '/contacto' },
 ]
@@ -20,9 +28,10 @@ const HEADER_OFFSET = 80
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeAnchor, setActiveAnchor] = useState('inicio')
+  const [isServicesMenuOpen, setIsServicesMenuOpen] = useState(false)
+  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const isHome = pathname === '/'
@@ -138,15 +147,59 @@ export default function Header() {
                   <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-brand-gold group-hover:w-full group-hover:left-0 transition-all duration-300"></span>
                 )
                 return 'href' in item ? (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    aria-current={active ? 'page' : undefined}
-                    className={`${itemClassName} group`}
-                  >
-                    {item.label}
-                    {underline}
-                  </Link>
+                  item.children && item.children.length > 0 ? (
+                    <div
+                      key={item.label}
+                      className="relative"
+                      onMouseEnter={() => setIsServicesMenuOpen(true)}
+                      onMouseLeave={() => setIsServicesMenuOpen(false)}
+                    >
+                      <Link
+                        href={item.href}
+                        aria-current={active ? 'page' : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={isServicesMenuOpen}
+                        className={`${itemClassName} group inline-flex items-center gap-1`}
+                      >
+                        {item.label}
+                        <ChevronDown
+                          size={14}
+                          className={`transition-transform duration-200 ${isServicesMenuOpen ? 'rotate-180' : ''}`}
+                        />
+                        {underline}
+                      </Link>
+                      <div
+                        className={`absolute left-0 top-full mt-2 w-72 rounded-xl bg-white shadow-xl border border-gray-100 overflow-hidden transition-all duration-200 origin-top ${
+                          isServicesMenuOpen
+                            ? 'opacity-100 visible scale-y-100 translate-y-0'
+                            : 'opacity-0 invisible scale-y-95 -translate-y-1 pointer-events-none'
+                        }`}
+                      >
+                        <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-brand-gold to-transparent"></div>
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => setIsServicesMenuOpen(false)}
+                            className="flex items-center justify-between gap-2 px-4 py-3 text-[13px] font-medium text-gray-700 hover:text-brand-navy hover:bg-cream/60 border-b border-gray-50 last:border-b-0 transition-colors duration-150"
+                          >
+                            <span className="truncate">{child.label}</span>
+                            <ArrowRight size={13} className="text-brand-gold/60 flex-shrink-0" />
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      aria-current={active ? 'page' : undefined}
+                      className={`${itemClassName} group`}
+                    >
+                      {item.label}
+                      {underline}
+                    </Link>
+                  )
                 ) : (
                   <button
                     key={item.label}
@@ -160,18 +213,15 @@ export default function Header() {
               })}
             </nav>
 
-            {/* Search icon */}
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                setIsSearchOpen(true)
-              }}
-              aria-label="Buscar publicaciones"
-              title="Buscar"
+            {/* Store icon */}
+            <Link
+              href="/tienda"
+              aria-label="Ir a la tienda"
+              title="Tienda"
               className="p-2 text-gray-700 hover:text-brand-gold hover:scale-105 active:scale-95 transition-all duration-200"
             >
-              <Search size={19} strokeWidth={2.2} />
-            </button>
+              <Store size={19} strokeWidth={2.2} />
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -203,17 +253,14 @@ export default function Header() {
         <nav className="rounded-2xl bg-white shadow-2xl border border-gray-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gradient-to-r from-cream/60 to-transparent">
             <p className="text-[11px] font-bold tracking-[0.2em] text-brand-navy/60 uppercase">Menú</p>
-            <button
-              type="button"
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                setIsSearchOpen(true)
-              }}
+            <Link
+              href="/tienda"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-brand-navy/70 hover:bg-white hover:text-brand-gold transition-colors"
             >
-              <Search size={15} />
-              Buscar
-            </button>
+              <Store size={15} />
+              Tienda
+            </Link>
           </div>
 
           <div className="max-h-[calc(100dvh-8rem)] overflow-y-auto">
@@ -235,15 +282,62 @@ export default function Header() {
                 : 'text-brand-navy hover:bg-cream hover:text-brand-gold active:bg-cream'
                 }`
               return 'href' in item ? (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  aria-current={active ? 'page' : undefined}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={itemClassName}
-                >
-                  {inner}
-                </Link>
+                item.children && item.children.length > 0 ? (
+                  <div key={item.label} className="border-b border-gray-100">
+                    <div className="flex items-stretch">
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        aria-current={active ? 'page' : undefined}
+                        className={`${itemClassName} flex-1 border-b-0`}
+                      >
+                        {inner}
+                      </Link>
+                      <button
+                        onClick={() => setIsMobileServicesOpen((open) => !open)}
+                        aria-label={isMobileServicesOpen ? 'Ocultar servicios' : 'Mostrar servicios'}
+                        aria-expanded={isMobileServicesOpen}
+                        className="px-4 text-gray-400 hover:text-brand-gold transition-colors"
+                      >
+                        <ChevronDown
+                          size={16}
+                          className={`transition-transform duration-200 ${isMobileServicesOpen ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                    </div>
+                    <div
+                      className={`overflow-hidden transition-all duration-300 ${
+                        isMobileServicesOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                      }`}
+                    >
+                      <div className="bg-cream/40 border-t border-gray-100">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            onClick={() => {
+                              setIsMobileServicesOpen(false)
+                              setIsMobileMenuOpen(false)
+                            }}
+                            className="block pl-14 pr-5 py-3 text-[13px] text-gray-600 hover:text-brand-navy hover:bg-cream transition-colors border-b border-gray-100/70 last:border-b-0"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    aria-current={active ? 'page' : undefined}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={itemClassName}
+                  >
+                    {inner}
+                  </Link>
+                )
               ) : (
                 <button
                   key={item.label}
@@ -266,8 +360,6 @@ export default function Header() {
           </Link>
         </nav>
       </div>
-
-      <SearchDialog open={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </header>
   )
 }

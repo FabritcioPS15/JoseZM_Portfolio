@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import {
   Users,
   Cog,
@@ -15,52 +16,9 @@ import {
 } from 'lucide-react'
 import PageHero from '@/components/PageHero'
 import PillarsVisual from '@/components/PillarsVisual'
+import { SERVICES, serviceHref } from '@/lib/services'
 
-/* ── 5 Service cards ─────────────────────────────────────────────── */
-const SERVICES = [
-  {
-    id: 'talento-humano',
-    title: 'Gestión del Talento Humano',
-    description:
-      'Estrategias y herramientas para atraer, desarrollar y retener el talento, fortaleciendo equipos comprometidos y productivos.',
-    image:
-      'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&h=400&fit=crop&q=80',
-  },
-  {
-    id: 'diseno-organizacional',
-    title: 'Diseño y Desarrollo Organizacional',
-    description:
-      'Estructuras, roles y procesos alineados a la estrategia para una organización más eficiente, ágil y sostenible.',
-    image:
-      'https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=600&h=400&fit=crop&q=80',
-  },
-  {
-    id: 'gestion-procesos',
-    title: 'Gestión por Procesos',
-    description:
-      'Mapeo, análisis y mejora de procesos para incrementar la eficiencia, reducir reprocesos y generar mayor valor.',
-    image:
-      'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&h=400&fit=crop&q=80',
-  },
-  {
-    id: 'indicadores-resultados',
-    title: 'Indicadores y Gestión de Resultados',
-    description:
-      'Definición e implementación de indicadores y tableros de gestión para una mejor toma de decisiones.',
-    image:
-      'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&q=80',
-  },
-  {
-    id: 'capacitacion',
-    title: 'Capacitación y Acompañamiento',
-    description:
-      'Programas de formación y acompañamiento para fortalecer las competencias clave y la cultura organizacional.',
-    image:
-      'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=400&fit=crop&q=80',
-  },
-]
-
-/* ── Bottom value propositions ─────────────────────────────────── */
+/* ── Bottom value propositions ─────────────────────────────── */
 const VALUE_PROPS = [
   {
     icon: Compass,
@@ -87,6 +45,16 @@ const VALUE_PROPS = [
 export default function ServiciosContent() {
   const cardsRef = useRef<HTMLDivElement>(null)
   const [cardsVisible, setCardsVisible] = useState(false)
+
+  useEffect(() => {
+    const hash = decodeURIComponent(window.location.hash.slice(1))
+    if (!hash) return
+    const timer = setTimeout(() => {
+      const el = document.getElementById(hash)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 150)
+    return () => clearTimeout(timer)
+  }, [])
 
   useEffect(() => {
     const obsCards = new IntersectionObserver(
@@ -153,9 +121,11 @@ export default function ServiciosContent() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 lg:gap-4"
           >
             {SERVICES.map((service, index) => (
-              <div
-                key={service.id}
-                className="group relative bg-white rounded-xl border border-gray-200/80 overflow-visible flex flex-col transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-gray-300/70"
+              <Link
+                key={service.slug}
+                href={serviceHref(service)}
+                id={service.slug}
+                className="group relative bg-white rounded-xl border border-gray-200/80 overflow-visible flex flex-col transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:border-gray-300/70 scroll-mt-24"
                 style={{
                   animationName: cardsVisible ? 'fadeInUp' : 'none',
                   animationDuration: '0.6s',
@@ -194,16 +164,16 @@ export default function ServiciosContent() {
 
                   {/* "Conoce más" link */}
                   <div className="pt-4 mt-auto">
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand-gold hover:text-[#b8924b] transition-colors duration-200 cursor-pointer group/link">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand-gold group-hover:text-[#b8924b] transition-colors duration-200">
                       <span>Conoce más</span>
                       <ArrowRight
                         size={13}
-                        className="transition-transform duration-200 group-hover/link:translate-x-0.5"
+                        className="transition-transform duration-200 group-hover:translate-x-0.5"
                       />
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -46,7 +46,7 @@ export default function Hero() {
       <div className="relative flex-1 flex items-center overflow-hidden py-8 sm:py-12 lg:py-16">
 
         {/* Background Portrait of José Luis Zelada */}
-        <div className="absolute inset-y-0 right-0 w-full lg:w-[58%] xl:w-[55%] 2xl:w-[52%] max-w-[920px] xl:max-w-[900px] h-full pointer-events-none select-none z-0 overflow-hidden">
+        <div className="absolute inset-y-0 right-0 w-full lg:w-[54%] xl:w-[51%] 2xl:w-[49%] max-w-[880px] xl:max-w-[860px] h-full pointer-events-none select-none z-0 overflow-hidden">
           <Image
             src="/images/perfilbueno.png"
             alt="José Luis Zelada - Consultor en Recursos Humanos y Gestión Organizacional"
@@ -56,7 +56,7 @@ export default function Hero() {
             className="object-cover object-[center_2%] lg:object-[36%_2%]"
           />
           {/* Subtle warm lighting vignette */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B1522] via-[#0B1522]/90 via-22% md:via-[#0B1522]/55 md:via-15% lg:via-[#0B1522]/20 lg:via-10% to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0B1522] via-[#0B1522]/95 via-45% md:via-[#0B1522]/70 md:via-55% lg:via-[#0B1522]/40 lg:via-35% to-transparent"></div>
           {/* Mobile darkened overlay so text is 100% legible */}
           <div className="absolute inset-0 bg-[#0B1522]/80 lg:hidden"></div>
           {/* Bottom subtle fade to merge into feature bar */}
@@ -124,12 +124,12 @@ export default function Hero() {
                 opacity: 0,
               }}
             >
-              <div className="bg-white rounded-xl shadow-2xl p-3 sm:p-4 max-w-[195px] sm:max-w-[215px] lg:max-w-[225px] border border-gray-100 text-left transition-transform duration-300 hover:scale-[1.02]">
-                <p className="font-serif text-[#0F2440] text-sm sm:text-[15px] font-medium leading-snug">
+              <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-5 max-w-[150px] sm:max-w-[165px] lg:max-w-[175px] min-h-[210px] sm:min-h-[230px] border border-gray-100 text-left flex flex-col justify-center transition-transform duration-300 hover:scale-[1.02]">
+                <p className="font-serif text-[#0F2440] text-sm sm:text-[15px] font-medium leading-relaxed">
                   “Gestión que conecta personas, procesos y resultados”
                 </p>
-                <div className="w-6 h-[1.5px] bg-brand-gold my-2.5"></div>
-                <p className="font-sans text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight mt-0.5">
+                <div className="w-6 h-[1.5px] bg-brand-gold my-3"></div>
+                <p className="font-sans text-[9px] sm:text-[10px] text-gray-500 font-medium leading-relaxed mt-0.5">
                   Consultoría en gestión organizacional, talento y mejora de procesos.
                 </p>
               </div>
